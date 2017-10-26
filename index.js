@@ -32,9 +32,9 @@ var config = require("rf-config"),
    log = require("rf-log"),
    mongoose = require("mongoose"),
    app = require("rf-load").require("http").app,
-   Request = require('models/Request'),
-   Response = require('models/Response'),
-   ServiceFactory = require("ServiceFactory"); 
+   Request = require('./models/Request.js'),
+   Response = require('./models/Response.js'),
+   ServiceFactory = require("./ServiceFactory"); 
 
 
 module.exports.API = {
