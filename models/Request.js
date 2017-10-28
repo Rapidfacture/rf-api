@@ -8,7 +8,7 @@ module.exports = function(req) {
    var self = this;
    
    // Original Request
-   self.orgReq = req;
+   self.originalRequest = req;
    
    // Set session if available
    self.session = req._session || null;
