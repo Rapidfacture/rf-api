@@ -26,7 +26,7 @@ module.exports = function (res) {
    * res.error("statusRed");
    * @example
    * //with callback
-   * 
+   *
    * createDocs()
    *
    * function createDocs(){
@@ -76,7 +76,7 @@ module.exports = function (res) {
 
 
    /** @function error
-    * @desc  default error
+    * @desc default error; try to extract an error code from err
     * @param err every datatype allowed
     * @example res.error("statusRed");
     */
@@ -88,7 +88,7 @@ module.exports = function (res) {
 
 
    /** @function errorInternal
-    * @desc  if error isn't handeled
+    * @desc error 500: if error isn't handeled
     * @param err string
     * @example res.errorInternal("Database error");
     */
@@ -98,7 +98,7 @@ module.exports = function (res) {
 
 
    /** @function errorBadRequest
-    * @desc missing or wrong parameters
+    * @desc error 400: missing or wrong parameters
     * @param err string
     * @example res.errorBadRequest("Missing id");
     */
@@ -108,7 +108,7 @@ module.exports = function (res) {
 
 
    /** @function errorAuthorizationRequired
-    * @desc  not autorized for route
+    * @desc error 401: not autorized for route
     * @param err string
     * @example res.errorAuthorizationRequired();
     */
@@ -118,7 +118,7 @@ module.exports = function (res) {
 
 
    /** @function errorAccessDenied
-    * @desc request not allowed for user
+    * @desc error 403: request not allowed for user
     * @param err string
     * @example res.errorAccessDenied("You need be admin");
     */
@@ -128,7 +128,7 @@ module.exports = function (res) {
 
 
    /** @function errorNotFound
-    * @desc not found or not available
+    * @desc error 404: not found or not available
     * @param err string
     * @example res.errorNotFound("No user found");
     */
@@ -138,6 +138,7 @@ module.exports = function (res) {
 
 
    /** @function errorAlreadyExists
+    * @desc error 409: already exists
     * @param err string
     * @example res.errorAlreadyExists();
     */
@@ -147,7 +148,7 @@ module.exports = function (res) {
 
    /**
     * @function errorNoLongerExists
-    * @desc tried to save an entry wich was removed
+    * @desc error 410: tried to save an entry wich was removed
     * @param err string
     * @example
     * res.errorNoLongerExists("User is gone");

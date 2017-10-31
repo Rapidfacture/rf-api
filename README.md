@@ -256,16 +256,25 @@ default response function; adds error handling
 
 **Example**  
 ```js
-simple
+//simple
 res.error("statusRed");
 ```
 **Example**  
 ```js
-with callback
-res.send(err, docs, processDocs);
-function processDocs(docs){
+//with callback
+
+createDocs()
+
+function createDocs(){
+  createDoc(function (err, doc){
+    res.send(err, docs, processDocs);
+  })
+}
+
+function processDocs(){
   console.log(docs)
-});
+  res.send(err, docs);
+}
  // linearize asynchron code with the successFunction. instead of:
  //
  //   execute function A
@@ -290,7 +299,7 @@ function processDocs(docs){
 ```
 **Example**  
 ```js
-respond from db with error handling
+// respond from db with error handling
 db.user.groups  // send all groups back to client
   .find({})
   .exec(res.send);
