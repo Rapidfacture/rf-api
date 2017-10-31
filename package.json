@@ -5,8 +5,8 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "prepublish": "npm test",
-    "test": "sh test/isRepoClean && grunt"
+    "prepublish": "sh test/isRepoClean && npm test",
+    "test": "grunt"
   },
   "dependencies": {},
   "devDependencies": {
