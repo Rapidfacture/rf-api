@@ -1,51 +1,9 @@
 /**
- * Response
+ * @module Response
  * @desc middleware for express response; adds error handling
  */
 
 var log = require('rf-log')
-
-
-/**
-* res.send: default response function
-* adds error handling: req url, stringifies objects for readabilty
-* linearize asynchron code with the successFunction. instead of:
-*
-*   execute function A
-*      then execute function B
-*         afterwards execute function C
-*             afterwards execute function D
-*
-*  the code is linearized:
-*
-*  execute function A
-*
-*  function A
-*     then execute function B
-*
-*  function B
-*     then execute function C
-*
-*  function C
-*     then execute function D
-*
-* advantages: better readabilty, automatic error names for each function
-*
-*
-* @param err: every datatype allowed; sends an error if not 'null';
-* @param data: every datatype allowed; optional
-* @param successFunction: callback function; optional
-* @example
-* res.send(err, docs, processDocs);
-* function processDocs(docs){
-*   console.log(docs)
-* });
-* @example
-* db.user.groups  // send all groups back to client
-*   .find({})
-*   .exec(res.send);
-*
-*/
 
 
 
@@ -53,23 +11,62 @@ module.exports = function (res) {
    // makes 'this' usable within child functions
    var self = this
 
-   /** originalResponse: pass original express response
+
+   /** @var originalResponse pass original express response
    */
    self.originalResponse = res
 
 
-
-   /** send: default answer function for client request
-    * @param err: every datatype allowed
-    * @example res.error("statusRed");
-    */
-   self.send = function (err, docs) {
-      send(err, docs, res)
+   /** @function send
+   * @desc  default response function; adds error handling
+   * @param err every datatype allowed; sends an error if not 'null';
+   * @param data every datatype allowed; optional
+   * @param successFunction callback function; optional
+   * @example simple
+   * res.error("statusRed");
+   * @example with callback
+   * res.send(err, docs, processDocs);
+   * function processDocs(docs){
+   *   console.log(docs)
+   * });
+   *  // linearize asynchron code with the successFunction. instead of:
+   *  //
+   *  //   execute function A
+   *  //     then execute function B
+   *  //        afterwards execute function C
+   *  //           afterwards execute function D
+   *  //
+   *  // the code is linearized:
+   *  //
+   *  // execute function A
+   *  //
+   *  // function A
+   *  //    then execute function B
+   *  //
+   *  // function B
+   *  //     then execute function C
+   *  //
+   *  // function C
+   *  //   then execute function D
+   *  //
+   *  // advantages: better readabilty, automatic error names for each function
+   * @example respond from db with error handling
+   * db.user.groups  // send all groups back to client
+   *   .find({})
+   *   .exec(res.send);
+   */
+   self.send = function (err, docs, callback) {
+      if (!err && callback) {
+         callback(docs)
+      } else {
+         send(err, docs)
+      }
    }
 
 
-   /** error: default error
-    * @param err: every datatype allowed
+   /** @function error
+    * @desc  default error
+    * @param err every datatype allowed
     * @example res.error("statusRed");
     */
    self.error = function (err) {
@@ -79,8 +76,9 @@ module.exports = function (res) {
    }
 
 
-   /** errorInternal: if error isn't handeled
-    * @param err: string
+   /** @function errorInternal
+    * @desc  if error isn't handeled
+    * @param err string
     * @example res.errorInternal("Database error");
     */
    self.errorInternal = function (err) {
@@ -88,8 +86,9 @@ module.exports = function (res) {
    }
 
 
-   /** errorBadRequest: missing or wrong parameters
-    * @param err: string
+   /** @function errorBadRequest
+    * @desc missing or wrong parameters
+    * @param err string
     * @example res.errorBadRequest("Missing id");
     */
    self.errorBadRequest = function (err) {
@@ -97,8 +96,9 @@ module.exports = function (res) {
    }
 
 
-   /** errorAuthorizationRequired: not autorized for route
-    * @param err: string
+   /** @function errorAuthorizationRequired
+    * @desc  not autorized for route
+    * @param err string
     * @example res.errorAuthorizationRequired();
     */
    self.errorAuthorizationRequired = function () {
@@ -106,8 +106,9 @@ module.exports = function (res) {
    }
 
 
-   /** errorAccessDenied: request not allowed for user
-    * @param err: string
+   /** @function errorAccessDenied
+    * @desc request not allowed for user
+    * @param err string
     * @example res.errorAccessDenied("You need be admin");
     */
    self.errorAccessDenied = function (err) {
@@ -115,8 +116,9 @@ module.exports = function (res) {
    }
 
 
-   /** errorNotFound: not found or not available
-    * @param err: string
+   /** @function errorNotFound
+    * @desc not found or not available
+    * @param err string
     * @example res.errorNotFound("No user found");
     */
    self.errorNotFound = function (err) {
@@ -124,8 +126,8 @@ module.exports = function (res) {
    }
 
 
-   /** errorAlreadyExists
-    * @param err: string
+   /** @function errorAlreadyExists
+    * @param err string
     * @example res.errorAlreadyExists();
     */
    self.errorAlreadyExists = function (err) {
@@ -133,17 +135,19 @@ module.exports = function (res) {
    }
 
    /**
-    * res.errorGone: send gone response if the requested resource doesn't exists anymore. ("User tries to save an entry wich is removed by another customer")
-    * @param err: string
+    * @function errorNoLongerExists
+    * @desc tried to save an entry wich was removed
+    * @param err string
     * @example
-    * res.errorGone("User is gone");
+    * res.errorNoLongerExists("User is gone");
     */
-   self.errorGone = function (err) {
+   self.errorNoLongerExists = function (err) {
       send(err, null, res, 410)
    }
 
 
-   /** res.register: register further functions in this API from other server modules
+   /** @function register
+    * @desc  register further functions from other server modules
     * @example
     * var answers = require("rf-load").require("API").answers;
     * answers.register(createPdf)

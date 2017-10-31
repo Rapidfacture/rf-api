@@ -1,8 +1,9 @@
 
 module.exports = function (grunt) {
    grunt.loadNpmTasks('grunt-eslint')
+   grunt.loadNpmTasks('grunt-jsdoc-to-markdown')
 
-   grunt.registerTask('default', ['eslint'])
+   grunt.registerTask('default', ['eslint', 'jsdoc2md'])
 
 
    grunt.initConfig({
@@ -17,8 +18,8 @@ module.exports = function (grunt) {
 
       jsdoc2md: {
          oneOutputFile: {
-            src: '*.js',
-            dest: 'documentation.md'
+            src: 'models/*.js',
+            dest: 'models/readme.md'
          }
       }
 
