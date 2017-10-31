@@ -1,10 +1,6 @@
-/**
- * @module Response
- * @desc middleware for express response; adds error handling
- */
-
+// @module Response
+// @desc middleware for express response; adds error handling
 var log = require('rf-log')
-
 
 
 module.exports = function (res) {
@@ -149,8 +145,8 @@ module.exports = function (res) {
    /** @function register
     * @desc  register further functions from other server modules
     * @example
-    * var answers = require("rf-load").require("API").answers;
-    * answers.register(createPdf)
+    * var Requests = require("rf-load").require("API").Requests;
+    * Requests.register(createPdf)
     */
    self.register = function (newFunction) {
       var newFunctionName = newFunction.name

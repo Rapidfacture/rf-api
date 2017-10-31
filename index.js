@@ -18,7 +18,7 @@
 var log = require('rf-log'),
    Request = require('./models/Request.js'),
    Response = require('./models/Response.js'),
-   Services = require('./Services'),
+   Services = require('./models/Services'),
    app = require('rf-load').require('http').app
 
 
@@ -27,22 +27,14 @@ module.exports.API = {
    get: function (functionName, func, settings) {
       app.get('/' + functionName, function (req, res, next) {
          log.info('GET: ' + functionName)
-
-         req = new Request(req)
-         res = new Response(res)
-
-         func(req, res)
+         func(new Request(req), new Response(res), new Services(res))
       })
    },
 
    post: function (functionName, func, settings) {
       app.post('/' + functionName, function (req, res, next) {
          log.info('POST: ' + functionName)
-
-         req = new Request(req)
-         res = new Response(res)
-
-         func(req, res)
+         func(new Request(req), new Response(res), new Services(res))
       })
    },
 

@@ -1,32 +1,54 @@
-<a name="module_Response"></a>
+## Members
 
-## Response
-middleware for express response; adds error handling
+<dl>
+<dt><a href="#originalResponse">originalResponse</a></dt>
+<dd></dd>
+</dl>
 
+## Functions
 
-* [Response](#module_Response)
-    * [~originalResponse](#module_Response..originalResponse)
-    * [~send(err, data, successFunction)](#module_Response..send)
-    * [~error(err)](#module_Response..error)
-    * [~errorInternal(err)](#module_Response..errorInternal)
-    * [~errorBadRequest(err)](#module_Response..errorBadRequest)
-    * [~errorAuthorizationRequired(err)](#module_Response..errorAuthorizationRequired)
-    * [~errorAccessDenied(err)](#module_Response..errorAccessDenied)
-    * [~errorNotFound(err)](#module_Response..errorNotFound)
-    * [~errorAlreadyExists(err)](#module_Response..errorAlreadyExists)
-    * [~errorNoLongerExists(err)](#module_Response..errorNoLongerExists)
-    * [~register()](#module_Response..register)
+<dl>
+<dt><a href="#send">send(err, data, successFunction)</a></dt>
+<dd><p>default response function; adds error handling</p>
+</dd>
+<dt><a href="#error">error(err)</a></dt>
+<dd><p>default error</p>
+</dd>
+<dt><a href="#errorInternal">errorInternal(err)</a></dt>
+<dd><p>if error isn&#39;t handeled</p>
+</dd>
+<dt><a href="#errorBadRequest">errorBadRequest(err)</a></dt>
+<dd><p>missing or wrong parameters</p>
+</dd>
+<dt><a href="#errorAuthorizationRequired">errorAuthorizationRequired(err)</a></dt>
+<dd><p>not autorized for route</p>
+</dd>
+<dt><a href="#errorAccessDenied">errorAccessDenied(err)</a></dt>
+<dd><p>request not allowed for user</p>
+</dd>
+<dt><a href="#errorNotFound">errorNotFound(err)</a></dt>
+<dd><p>not found or not available</p>
+</dd>
+<dt><a href="#errorAlreadyExists">errorAlreadyExists(err)</a></dt>
+<dd></dd>
+<dt><a href="#errorNoLongerExists">errorNoLongerExists(err)</a></dt>
+<dd><p>tried to save an entry wich was removed</p>
+</dd>
+<dt><a href="#register">register()</a></dt>
+<dd><p>register further functions from other server modules</p>
+</dd>
+</dl>
 
-<a name="module_Response..originalResponse"></a>
+<a name="originalResponse"></a>
 
-### Response~originalResponse
-**Kind**: inner property of [<code>Response</code>](#module_Response)  
-<a name="module_Response..send"></a>
+## originalResponse
+**Kind**: global variable  
+<a name="send"></a>
 
-### Response~send(err, data, successFunction)
+## send(err, data, successFunction)
 default response function; adds error handling
 
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+**Kind**: global function  
 
 | Param | Description |
 | --- | --- |
@@ -75,12 +97,12 @@ db.user.groups  // send all groups back to client
   .find({})
   .exec(res.send);
 ```
-<a name="module_Response..error"></a>
+<a name="error"></a>
 
-### Response~error(err)
+## error(err)
 default error
 
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+**Kind**: global function  
 
 | Param | Description |
 | --- | --- |
@@ -90,12 +112,12 @@ default error
 ```js
 res.error("statusRed");
 ```
-<a name="module_Response..errorInternal"></a>
+<a name="errorInternal"></a>
 
-### Response~errorInternal(err)
+## errorInternal(err)
 if error isn't handeled
 
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+**Kind**: global function  
 
 | Param | Description |
 | --- | --- |
@@ -105,12 +127,12 @@ if error isn't handeled
 ```js
 res.errorInternal("Database error");
 ```
-<a name="module_Response..errorBadRequest"></a>
+<a name="errorBadRequest"></a>
 
-### Response~errorBadRequest(err)
+## errorBadRequest(err)
 missing or wrong parameters
 
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+**Kind**: global function  
 
 | Param | Description |
 | --- | --- |
@@ -120,12 +142,12 @@ missing or wrong parameters
 ```js
 res.errorBadRequest("Missing id");
 ```
-<a name="module_Response..errorAuthorizationRequired"></a>
+<a name="errorAuthorizationRequired"></a>
 
-### Response~errorAuthorizationRequired(err)
+## errorAuthorizationRequired(err)
 not autorized for route
 
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+**Kind**: global function  
 
 | Param | Description |
 | --- | --- |
@@ -135,12 +157,12 @@ not autorized for route
 ```js
 res.errorAuthorizationRequired();
 ```
-<a name="module_Response..errorAccessDenied"></a>
+<a name="errorAccessDenied"></a>
 
-### Response~errorAccessDenied(err)
+## errorAccessDenied(err)
 request not allowed for user
 
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+**Kind**: global function  
 
 | Param | Description |
 | --- | --- |
@@ -150,12 +172,12 @@ request not allowed for user
 ```js
 res.errorAccessDenied("You need be admin");
 ```
-<a name="module_Response..errorNotFound"></a>
+<a name="errorNotFound"></a>
 
-### Response~errorNotFound(err)
+## errorNotFound(err)
 not found or not available
 
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+**Kind**: global function  
 
 | Param | Description |
 | --- | --- |
@@ -165,10 +187,10 @@ not found or not available
 ```js
 res.errorNotFound("No user found");
 ```
-<a name="module_Response..errorAlreadyExists"></a>
+<a name="errorAlreadyExists"></a>
 
-### Response~errorAlreadyExists(err)
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+## errorAlreadyExists(err)
+**Kind**: global function  
 
 | Param | Description |
 | --- | --- |
@@ -178,12 +200,12 @@ res.errorNotFound("No user found");
 ```js
 res.errorAlreadyExists();
 ```
-<a name="module_Response..errorNoLongerExists"></a>
+<a name="errorNoLongerExists"></a>
 
-### Response~errorNoLongerExists(err)
+## errorNoLongerExists(err)
 tried to save an entry wich was removed
 
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+**Kind**: global function  
 
 | Param | Description |
 | --- | --- |
@@ -193,12 +215,12 @@ tried to save an entry wich was removed
 ```js
 res.errorNoLongerExists("User is gone");
 ```
-<a name="module_Response..register"></a>
+<a name="register"></a>
 
-### Response~register()
+## register()
 register further functions from other server modules
 
-**Kind**: inner method of [<code>Response</code>](#module_Response)  
+**Kind**: global function  
 **Example**  
 ```js
 var answers = require("rf-load").require("API").answers;

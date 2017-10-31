@@ -15,9 +15,7 @@
     "grunt-jsdoc-to-markdown": "^3.0.0"
   },
   "peerDependencies": {
-    "mongoose": "^4.8.5",
     "rf-log": "^0.1.2",
-    "rf-config": "^0.1.11",
     "rf-load": "^0.1.9"
   },
   "author": {
