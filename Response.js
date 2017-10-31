@@ -21,13 +21,24 @@ module.exports = function (res) {
    * @param err every datatype allowed; sends an error if not 'null';
    * @param data every datatype allowed; optional
    * @param successFunction callback function; optional
-   * @example simple
+   * @example
+   * //simple
    * res.error("statusRed");
-   * @example with callback
-   * res.send(err, docs, processDocs);
-   * function processDocs(docs){
+   * @example
+   * //with callback
+   * 
+   * createDocs()
+   *
+   * function createDocs(){
+   *   createDoc(function (err, doc){
+   *     res.send(err, docs, processDocs);
+   *   })
+   * }
+   *
+   * function processDocs(){
    *   console.log(docs)
-   * });
+   *   res.send(err, docs);
+   * }
    *  // linearize asynchron code with the successFunction. instead of:
    *  //
    *  //   execute function A
@@ -49,7 +60,8 @@ module.exports = function (res) {
    *  //   then execute function D
    *  //
    *  // advantages: better readabilty, automatic error names for each function
-   * @example respond from db with error handling
+   * @example
+   * // respond from db with error handling
    * db.user.groups  // send all groups back to client
    *   .find({})
    *   .exec(res.send);
