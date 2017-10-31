@@ -1,5 +1,8 @@
-// @module Response
-// @desc middleware for express response; adds error handling
+/**
+ * @class Response
+ * @desc middleware for express response; adds error handling
+ */
+
 var log = require('rf-log')
 
 
@@ -139,22 +142,6 @@ module.exports = function (res) {
     */
    self.errorNoLongerExists = function (err) {
       send(err, null, res, 410)
-   }
-
-
-   /** @function register
-    * @desc  register further functions from other server modules
-    * @example
-    * var Requests = require("rf-load").require("API").Requests;
-    * Requests.register(createPdf)
-    */
-   self.register = function (newFunction) {
-      var newFunctionName = newFunction.name
-      if (!self[newFunctionName]) {
-         self[newFunctionName] = newFunction
-      } else {
-         log.critical('tried to register function ' + newFunctionName + ' in API, it but already exists.')
-      }
    }
 }
 

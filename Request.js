@@ -1,9 +1,8 @@
 /**
- * Request
- *
+ * @class Request
  * @desc convert obj structure of original express request
- * @example request structure
- *
+ * @example
+ * // request structure
  * {
  *    session
  *    token
@@ -12,8 +11,6 @@
  *    data
  *    originalRequest
  * }
- *
- *
  */
 
 module.exports = function (req) {
