@@ -90,27 +90,28 @@ API.post(&#39;funcName&#39;, function(data, res, services) {
 <dd><p>default response function; adds error handling</p>
 </dd>
 <dt><a href="#error">error(err)</a></dt>
-<dd><p>default error</p>
+<dd><p>default error; try to extract an error code from err</p>
 </dd>
 <dt><a href="#errorInternal">errorInternal(err)</a></dt>
-<dd><p>if error isn&#39;t handeled</p>
+<dd><p>error 500: if error isn&#39;t handeled</p>
 </dd>
 <dt><a href="#errorBadRequest">errorBadRequest(err)</a></dt>
-<dd><p>missing or wrong parameters</p>
+<dd><p>error 400: missing or wrong parameters</p>
 </dd>
 <dt><a href="#errorAuthorizationRequired">errorAuthorizationRequired(err)</a></dt>
-<dd><p>not autorized for route</p>
+<dd><p>error 401: not autorized for route</p>
 </dd>
 <dt><a href="#errorAccessDenied">errorAccessDenied(err)</a></dt>
-<dd><p>request not allowed for user</p>
+<dd><p>error 403: request not allowed for user</p>
 </dd>
 <dt><a href="#errorNotFound">errorNotFound(err)</a></dt>
-<dd><p>not found or not available</p>
+<dd><p>error 404: not found or not available</p>
 </dd>
 <dt><a href="#errorAlreadyExists">errorAlreadyExists(err)</a></dt>
-<dd></dd>
+<dd><p>error 409: already exists</p>
+</dd>
 <dt><a href="#errorNoLongerExists">errorNoLongerExists(err)</a></dt>
-<dd><p>tried to save an entry wich was removed</p>
+<dd><p>error 410: tried to save an entry wich was removed</p>
 </dd>
 <dt><a href="#register">register()</a></dt>
 <dd><p>register functions from other server modules</p>
@@ -307,7 +308,7 @@ db.user.groups  // send all groups back to client
 <a name="error"></a>
 
 ## error(err)
-default error
+default error; try to extract an error code from err
 
 **Kind**: global function  
 
@@ -322,7 +323,7 @@ res.error("statusRed");
 <a name="errorInternal"></a>
 
 ## errorInternal(err)
-if error isn't handeled
+error 500: if error isn't handeled
 
 **Kind**: global function  
 
@@ -337,7 +338,7 @@ res.errorInternal("Database error");
 <a name="errorBadRequest"></a>
 
 ## errorBadRequest(err)
-missing or wrong parameters
+error 400: missing or wrong parameters
 
 **Kind**: global function  
 
@@ -352,7 +353,7 @@ res.errorBadRequest("Missing id");
 <a name="errorAuthorizationRequired"></a>
 
 ## errorAuthorizationRequired(err)
-not autorized for route
+error 401: not autorized for route
 
 **Kind**: global function  
 
@@ -367,7 +368,7 @@ res.errorAuthorizationRequired();
 <a name="errorAccessDenied"></a>
 
 ## errorAccessDenied(err)
-request not allowed for user
+error 403: request not allowed for user
 
 **Kind**: global function  
 
@@ -382,7 +383,7 @@ res.errorAccessDenied("You need be admin");
 <a name="errorNotFound"></a>
 
 ## errorNotFound(err)
-not found or not available
+error 404: not found or not available
 
 **Kind**: global function  
 
@@ -397,6 +398,8 @@ res.errorNotFound("No user found");
 <a name="errorAlreadyExists"></a>
 
 ## errorAlreadyExists(err)
+error 409: already exists
+
 **Kind**: global function  
 
 | Param | Description |
@@ -410,7 +413,7 @@ res.errorAlreadyExists();
 <a name="errorNoLongerExists"></a>
 
 ## errorNoLongerExists(err)
-tried to save an entry wich was removed
+error 410: tried to save an entry wich was removed
 
 **Kind**: global function  
 
