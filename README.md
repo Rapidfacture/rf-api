@@ -5,6 +5,11 @@ Express Middleware with plugin system that reduces bad code practices
  * uniform error messages
  * linearize asynchron code
 
+Plugins
+* [rf-api-mailer](https://www.npmjs.com/package/rf-api-mailer)
+* [rf-api-thumbnail](https://www.npmjs.com/package/rf-api-thumbnail)
+* [rf-api-url2pdf](https://www.npmjs.com/package/rf-api-url2pdf)
+
 ## Install
 
 To install the module:
@@ -199,6 +204,9 @@ Then you can runs some test cases and eslint with:
 Generate Docs:
 > npm run-script doc
 
+## To Do
+* testing
+* create a grunt task for mdextract
 ## Legal Issues
 * License: MIT
 * Author: Rapidfacture GmbH

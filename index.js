@@ -6,6 +6,11 @@
  *  * uniform error messages
  *  * linearize asynchron code
  *
+ * Plugins
+ * * [rf-api-mailer](https://www.npmjs.com/package/rf-api-mailer)
+ * * [rf-api-thumbnail](https://www.npmjs.com/package/rf-api-thumbnail)
+ * * [rf-api-url2pdf](https://www.npmjs.com/package/rf-api-url2pdf)
+ *
  * ## Install
  *
  * To install the module:
