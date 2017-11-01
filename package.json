@@ -1,6 +1,6 @@
 {
   "name": "rf-api",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "API helper functions.",
   "license": "MIT",
   "main": "index.js",
@@ -13,7 +13,6 @@
   "devDependencies": {
     "grunt": "1.0.1",
     "grunt-eslint": "20.1.0",
-    "grunt-jsdoc-to-markdown": "^3.0.0",
     "mdextract": "1.0.0"
   },
   "peerDependencies": {
