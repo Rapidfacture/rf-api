@@ -55,3 +55,30 @@ module.exports = function (res) {
       }
    }
 }
+
+
+
+/**
+*
+* ## PeerDependencies
+* * `rf-log`
+* * `rf-load`
+*
+* ## Development
+*
+* Install the dev tools with
+> npm install
+*
+* Then you can runs some test cases and eslint with:
+*> npm test
+*
+* Generate Docs:
+* > npm run-script doc
+*
+* ## To Do
+* * testing
+* * create a grunt task for mdextract
+* ## Legal Issues
+* * License: MIT
+* * Author: Rapidfacture GmbH
+*/

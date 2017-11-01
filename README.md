@@ -28,24 +28,6 @@ load.file('rf-api')
 load.module("rf-api-mailer");
 ```
 
-## PeerDependencies
-* `rf-log`
-* `rf-load`
-
-## Development
-
-Install the dev tools with
-
-Then you can runs some test cases and eslint with:
-> npm test
-
-Generate Docs:
-> npm run-script doc
-
-## Legal Issues
-* License: MIT
-* Author: Rapidfacture GmbH
-
 ## Usage
 
 Note:
@@ -202,3 +184,21 @@ function createPdf(url, callback){
 }
 Services.register(createPdf)
 ```
+
+## PeerDependencies
+* `rf-log`
+* `rf-load`
+
+## Development
+
+Install the dev tools with
+
+Then you can runs some test cases and eslint with:
+> npm test
+
+Generate Docs:
+> npm run-script doc
+
+## Legal Issues
+* License: MIT
+* Author: Rapidfacture GmbH

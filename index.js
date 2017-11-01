@@ -29,24 +29,6 @@
  * load.module("rf-api-mailer");
  * ```
  *
- * ## PeerDependencies
- * * `rf-log`
- * * `rf-load`
- *
- * ## Development
- *
- * Install the dev tools with
- > npm install
- *
- * Then you can runs some test cases and eslint with:
- *> npm test
- *
- * Generate Docs:
- * > npm run-script doc
- *
- * ## Legal Issues
- * * License: MIT
- * * Author: Rapidfacture GmbH
  */
 
 
