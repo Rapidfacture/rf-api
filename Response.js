@@ -1,7 +1,8 @@
 /**
- * @class Response
- * @desc middleware for express response; adds error handling
+ * ## res
+ *  middleware for express response; adds error handling
  */
+
 
 var log = require('rf-log')
 
@@ -147,8 +148,11 @@ module.exports = function (res) {
    }
 
    /**
-    * @function errorNoLongerExists
-    * @desc error 410: tried to save an entry wich was removed
+    * ### res.errorNoLongerExists()
+    * ```js
+    *  res.errorNoLongerExists("User is gone");
+    * ```
+    * error 410: tried to save an entry wich was removed
     * @param err string
     * @example
     * res.errorNoLongerExists("User is gone");

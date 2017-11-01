@@ -1,15 +1,14 @@
 /**
- * @class Request
- * @desc convert obj structure of original express request
- * @example
+ * ## req
+ * convert obj structure of original express request
  * // request structure
  * {
- *    session
- *    token
- *    user
- *    rights
- *    data
- *    originalRequest
+ *   session            // extracted from rf-acl
+ *   token              // extracted from rf-acl
+ *   user               // extracted from rf-acl
+ *   rights             // extracted from rf-acl
+ *   data               // data from client
+ *   originalRequest    // express req
  * }
  */
 

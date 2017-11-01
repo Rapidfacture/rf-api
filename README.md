@@ -1,126 +1,3 @@
-## Modules
-
-<dl>
-<dt><a href="#module_API">API</a></dt>
-<dd><h1 id="rapidfacture-api">Rapidfacture API</h1>
-<p>Express Middleware with plugin system that reduces bad code practices</p>
-<ul>
-<li>shortens code</li>
-<li>prevent forgotten error handling</li>
-<li>uniform error messages</li>
-<li>linearize asynchron code</li>
-</ul>
-<h2 id="install">Install</h2>
-<p>To install the module:</p>
-<blockquote>
-<p>npm install rf-api</p>
-</blockquote>
-<pre><code class="language-javascript">var Loader = require(&#39;rf-load&#39;).moduleLoader
-var load = new Loader()
-load.setModulePath(config.paths.modules)
-
-// other stuff
-load.file(&#39;db&#39;)
-load.file(&#39;http&#39;)
-
-// start request api
-load.file(&#39;rf-api&#39;)
-
-// plug in other modules into the api
-load.module(&quot;rf-api-mailer&quot;);
-</code></pre>
-<h2 id="usage">Usage</h2>
-<pre><code class="lang-js">var API = require(&quot;rf-load&quot;).require(&quot;rf-api&quot;).API
-
-// for read only stuff
-API.get(&#39;funcName&#39;, function(data, res, services) {
-    // code to process the request here
-});
-// for stuff with write access
-API.post(&#39;funcName&#39;, function(data, res, services) {
-    // code to process the request here
-});
-</code></pre>
-<p>Note:</p>
-<ul>
-<li>there are no url parameters used; the correspondig <code>http Factory</code> transfers a json objects to the API methods; this obj should include everything</li>
-<li>name your request properly</li>
-</ul>
-<h2 id="peerdependencies">PeerDependencies</h2>
-<ul>
-<li><code>rf-log</code></li>
-<li><code>rf-load</code></li>
-</ul>
-<h2 id="legal-issues">Legal Issues</h2>
-<ul>
-<li>License: MIT</li>
-<li>Author: Rapidfacture GmbH</li>
-</ul>
-</dd>
-</dl>
-
-## Classes
-
-<dl>
-<dt><a href="#Request">Request</a></dt>
-<dd></dd>
-<dt><a href="#Response">Response</a></dt>
-<dd></dd>
-<dt><a href="#Services">Services</a></dt>
-<dd></dd>
-</dl>
-
-## Members
-
-<dl>
-<dt><a href="#originalResponse">originalResponse</a></dt>
-<dd></dd>
-<dt><a href="#Services">Services</a></dt>
-<dd><p>express response for error handling and sending docs; public to registred functions</p>
-</dd>
-<dt><a href="#Services">Services</a></dt>
-<dd><p>public var that holds all registred services</p>
-</dd>
-</dl>
-
-## Functions
-
-<dl>
-<dt><a href="#send">send(err, data, successFunction)</a></dt>
-<dd><p>default response function; adds error handling</p>
-</dd>
-<dt><a href="#error">error(err)</a></dt>
-<dd><p>default error; try to extract an error code from err</p>
-</dd>
-<dt><a href="#errorInternal">errorInternal(err)</a></dt>
-<dd><p>error 500: if error isn&#39;t handeled</p>
-</dd>
-<dt><a href="#errorBadRequest">errorBadRequest(err)</a></dt>
-<dd><p>error 400: missing or wrong parameters</p>
-</dd>
-<dt><a href="#errorAuthorizationRequired">errorAuthorizationRequired(err)</a></dt>
-<dd><p>error 401: not autorized for route</p>
-</dd>
-<dt><a href="#errorAccessDenied">errorAccessDenied(err)</a></dt>
-<dd><p>error 403: request not allowed for user</p>
-</dd>
-<dt><a href="#errorNotFound">errorNotFound(err)</a></dt>
-<dd><p>error 404: not found or not available</p>
-</dd>
-<dt><a href="#errorAlreadyExists">errorAlreadyExists(err)</a></dt>
-<dd><p>error 409: already exists</p>
-</dd>
-<dt><a href="#errorNoLongerExists">errorNoLongerExists(err)</a></dt>
-<dd><p>error 410: tried to save an entry wich was removed</p>
-</dd>
-<dt><a href="#register">register()</a></dt>
-<dd><p>register functions from other server modules</p>
-</dd>
-</dl>
-
-<a name="module_API"></a>
-
-## API
 # Rapidfacture API
 Express Middleware with plugin system that reduces bad code practices
  * shortens code
@@ -151,24 +28,6 @@ load.file('rf-api')
 load.module("rf-api-mailer");
 ```
 
-## Usage
-
-```js
-var API = require("rf-load").require("rf-api").API
-
-// for read only stuff
-API.get('funcName', function(data, res, services) {
-    // code to process the request here
-});
-// for stuff with write access
-API.post('funcName', function(data, res, services) {
-    // code to process the request here
-});
-```
-Note:
-* there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj should include everything
-* name your request properly
-
 ## PeerDependencies
 * `rf-log`
 * `rf-load`
@@ -177,91 +36,41 @@ Note:
 * License: MIT
 * Author: Rapidfacture GmbH
 
-<a name="Request"></a>
+## Usage
 
-## Request
-**Kind**: global class  
-<a name="new_Request_new"></a>
-
-### new Request()
-convert obj structure of original express request
-
-**Example**  
 ```js
-// request structure
-{
-   session
-   token
-   user
-   rights
-   data
-   originalRequest
-}
+var API = require("rf-load").require("rf-api").API
+
+// for read only stuff
+API.get('funcName', function(req, res, services) {
+    // code to process the request here
+});
+// for stuff with write access
+API.post('funcName', function(req, res, services) {
+    // code to process the request here
+});
 ```
-<a name="Response"></a>
+Note:
+* there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj should include everything
+* name your request properly
 
-## Response
-**Kind**: global class  
-<a name="new_Response_new"></a>
+@module Request
+@desc convert obj structure of original express request
 
-### new Response()
-middleware for express response; adds error handling
+@module Response
+@desc middleware for express response; adds error handling
 
-<a name="Services"></a>
+@var originalResponse pass original express response
 
-## Services
-**Kind**: global class  
-<a name="new_Services_new"></a>
-
-### new Services()
-plug in functions from other modules
-
-<a name="originalResponse"></a>
-
-## originalResponse
-**Kind**: global variable  
-<a name="Services"></a>
-
-## Services
-express response for error handling and sending docs; public to registred functions
-
-**Kind**: global variable  
-<a name="new_Services_new"></a>
-
-### new Services()
-plug in functions from other modules
-
-<a name="Services"></a>
-
-## Services
-public var that holds all registred services
-
-**Kind**: global variable  
-<a name="new_Services_new"></a>
-
-### new Services()
-plug in functions from other modules
-
-<a name="send"></a>
-
-## send(err, data, successFunction)
-default response function; adds error handling
-
-**Kind**: global function  
-
-| Param | Description |
-| --- | --- |
-| err | every datatype allowed; sends an error if not 'null'; |
-| data | every datatype allowed; optional |
-| successFunction | callback function; optional |
-
-**Example**  
-```js
+@function send
+@desc  default response function; adds error handling
+@param err every datatype allowed; sends an error if not 'null';
+@param data every datatype allowed; optional
+@param successFunction callback function; optional
+@example
 //simple
 res.error("statusRed");
-```
-**Example**  
-```js
+@example
 //with callback
 
 createDocs()
@@ -297,142 +106,66 @@ function processDocs(){
  //   then execute function D
  //
  // advantages: better readabilty, automatic error names for each function
-```
-**Example**  
-```js
+@example
 // respond from db with error handling
 db.user.groups  // send all groups back to client
   .find({})
   .exec(res.send);
-```
-<a name="error"></a>
 
-## error(err)
-default error; try to extract an error code from err
+@function error
+@desc default error; try to extract an error code from err
+@param err every datatype allowed
+@example res.error("statusRed");
 
-**Kind**: global function  
+@function errorInternal
+@desc error 500: if error isn't handeled
+@param err string
+@example res.errorInternal("Database error");
 
-| Param | Description |
-| --- | --- |
-| err | every datatype allowed |
+@function errorBadRequest
+@desc error 400: missing or wrong parameters
+@param err string
+@example res.errorBadRequest("Missing id");
 
-**Example**  
-```js
-res.error("statusRed");
-```
-<a name="errorInternal"></a>
+@function errorAuthorizationRequired
+@desc error 401: not autorized for route
+@param err string
+@example res.errorAuthorizationRequired();
 
-## errorInternal(err)
-error 500: if error isn't handeled
+@function errorAccessDenied
+@desc error 403: request not allowed for user
+@param err string
+@example res.errorAccessDenied("You need be admin");
 
-**Kind**: global function  
+@function errorNotFound
+@desc error 404: not found or not available
+@param err string
+@example res.errorNotFound("No user found");
 
-| Param | Description |
-| --- | --- |
-| err | string |
+@function errorAlreadyExists
+@desc error 409: already exists
+@param err string
+@example res.errorAlreadyExists();
 
-**Example**  
-```js
-res.errorInternal("Database error");
-```
-<a name="errorBadRequest"></a>
-
-## errorBadRequest(err)
-error 400: missing or wrong parameters
-
-**Kind**: global function  
-
-| Param | Description |
-| --- | --- |
-| err | string |
-
-**Example**  
-```js
-res.errorBadRequest("Missing id");
-```
-<a name="errorAuthorizationRequired"></a>
-
-## errorAuthorizationRequired(err)
-error 401: not autorized for route
-
-**Kind**: global function  
-
-| Param | Description |
-| --- | --- |
-| err | string |
-
-**Example**  
-```js
-res.errorAuthorizationRequired();
-```
-<a name="errorAccessDenied"></a>
-
-## errorAccessDenied(err)
-error 403: request not allowed for user
-
-**Kind**: global function  
-
-| Param | Description |
-| --- | --- |
-| err | string |
-
-**Example**  
-```js
-res.errorAccessDenied("You need be admin");
-```
-<a name="errorNotFound"></a>
-
-## errorNotFound(err)
-error 404: not found or not available
-
-**Kind**: global function  
-
-| Param | Description |
-| --- | --- |
-| err | string |
-
-**Example**  
-```js
-res.errorNotFound("No user found");
-```
-<a name="errorAlreadyExists"></a>
-
-## errorAlreadyExists(err)
-error 409: already exists
-
-**Kind**: global function  
-
-| Param | Description |
-| --- | --- |
-| err | string |
-
-**Example**  
-```js
-res.errorAlreadyExists();
-```
-<a name="errorNoLongerExists"></a>
-
-## errorNoLongerExists(err)
-error 410: tried to save an entry wich was removed
-
-**Kind**: global function  
-
-| Param | Description |
-| --- | --- |
-| err | string |
-
-**Example**  
-```js
+@function errorNoLongerExists
+@desc error 410: tried to save an entry wich was removed
+@param err string
+@example
 res.errorNoLongerExists("User is gone");
-```
-<a name="register"></a>
 
-## register()
+# Services
+plug in functions from other modules
+
+@var res
+@desc express response for error handling and sending docs; public to registred functions
+
+@var Services
+@desc public var that holds all registred services
+
+### function
+
 register functions from other server modules
-
-**Kind**: global function  
-**Example**  
-```js
+@example
 // register a function
 var Services = require("rf-load").require("API").Services;
 function createPdf(url, callback){
@@ -446,9 +179,8 @@ function createPdf(url, callback){
   })
 }
 Services.register(createPdf)
-```
-**Example**  
-```js
+
+@example
 // execute a registred service function
 var API = require("rf-load").require("API");
 
@@ -458,4 +190,3 @@ var API = require("rf-load").require("API");
          res.send(corrected)
    })
  })
-```

@@ -1,6 +1,8 @@
-/** @class Services
- * @desc plug in functions from other modules
- */
+/**
+  * # Services
+  * plug in functions from other modules
+  */
+
 
 var log = require('rf-log')
 var _Services = {}
@@ -9,7 +11,7 @@ var _Services = {}
 module.exports = function (res) {
    var self = this
 
-   /** @var Services
+   /** @var res
     * @desc express response for error handling and sending docs; public to registred functions
     */
    self.res = res
@@ -20,8 +22,8 @@ module.exports = function (res) {
    self.Services = _Services
 
 
-   /** @function register
-    * @desc  register functions from other server modules
+   /**
+    * function: register functions from other server modules
     * @example
     * // register a function
     * var Services = require("rf-load").require("API").Services;

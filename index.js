@@ -1,7 +1,4 @@
 /**
- * @module API
- *
- * @desc
  * # Rapidfacture API
  * Express Middleware with plugin system that reduces bad code practices
  *  * shortens code
@@ -32,32 +29,24 @@
  * load.module("rf-api-mailer");
  * ```
  *
- * ## Usage
- *
- * ```js
- * var API = require("rf-load").require("rf-api").API
- *
- * // for read only stuff
- * API.get('funcName', function(data, res, services) {
- *     // code to process the request here
- * });
- * // for stuff with write access
- * API.post('funcName', function(data, res, services) {
- *     // code to process the request here
- * });
- * ```
- * Note:
- * * there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj should include everything
- * * name your request properly
- *
  * ## PeerDependencies
  * * `rf-log`
  * * `rf-load`
  *
+ * ## Development
+ *
+ * Install the dev tools with
+ > npm install
+ *
+ * Then you can runs some test cases and eslint with:
+ *> npm test
+ *
+ * Generate Docs:
+ * > npm run-script doc
+ *
  * ## Legal Issues
  * * License: MIT
  * * Author: Rapidfacture GmbH
- *
  */
 
 
@@ -70,17 +59,38 @@ var log = require('rf-log'),
 
 module.exports.API = {
 
+   /**
+   * ## Usage
+   *
+   * ```js
+   * var API = require("rf-load").require("rf-api").API
+   *
+   * // for read only stuff
+   * API.get('funcName', function(req, res, services) {
+   *     // code to process the request here
+   * });
+   * // for stuff with write access
+   * API.post('funcName', function(req, res, services) {
+   *     // code to process the request here
+   * });
+   * ```
+   * Note:
+   * * there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj should include everything
+   * * name your request properly
+   *
+   */
+
    get: function (functionName, func, settings) {
       app.get('/' + functionName, function (req, res, next) {
          log.info('GET: ' + functionName)
-         func(new Request(req), new Response(res), new Services(res))
+         func(new Request(req), new Response(res), new Services(res).Services)
       })
    },
 
    post: function (functionName, func, settings) {
       app.post('/' + functionName, function (req, res, next) {
          log.info('POST: ' + functionName)
-         func(new Request(req), new Response(res), new Services(res))
+         func(new Request(req), new Response(res), new Services(res).Services)
       })
    },
 
