@@ -62,6 +62,10 @@ module.exports.API = {
    /**
    * ## Usage
    *
+   * Note:
+   * * there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj should include everything
+   * * name your request properly
+   *
    * ```js
    * var API = require("rf-load").require("rf-api").API
    *
@@ -74,10 +78,6 @@ module.exports.API = {
    *     // code to process the request here
    * });
    * ```
-   * Note:
-   * * there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj should include everything
-   * * name your request properly
-   *
    */
 
    get: function (functionName, func, settings) {

@@ -1,7 +1,7 @@
 /**
  * ## req
  * convert obj structure of original express request
- * // request structure
+ * ```js
  * {
  *   session            // extracted from rf-acl
  *   token              // extracted from rf-acl
@@ -10,6 +10,7 @@
  *   data               // data from client
  *   originalRequest    // express req
  * }
+ * ```
  */
 
 module.exports = function (req) {

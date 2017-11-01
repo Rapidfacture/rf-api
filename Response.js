@@ -1,6 +1,7 @@
 /**
  * ## res
- *  middleware for express response; adds error handling
+ * Middleware for express response; adds error handling.
+ * The original express respones is also passed as `res.originalResponse`
  */
 
 
@@ -11,23 +12,27 @@ module.exports = function (res) {
    // makes 'this' usable within child functions
    var self = this
 
-
-   /** @var originalResponse pass original express response
-   */
    self.originalResponse = res
 
 
-   /** @function send
-   * @desc  default response function; adds error handling
-   * @param err every datatype allowed; sends an error if not 'null';
-   * @param data every datatype allowed; optional
-   * @param successFunction callback function; optional
-   * @example
-   * //simple
-   * res.error("statusRed");
-   * @example
-   * //with callback
+   /** ### res.send()
    *
+   * default response function; adds error handling
+   *
+   * Example: Simple
+   * ```js
+   * res.error("statusRed");
+   * ```
+   *
+   * Example: respond from db with error handling
+   * ```js
+   * db.user.groups  // send all groups back to client
+   *   .find({})
+   *   .exec(res.send);
+   * ```
+   *
+   * Example: using the callback function
+   * ```js
    * createDocs()
    *
    * function createDocs(){
@@ -61,11 +66,7 @@ module.exports = function (res) {
    *  //   then execute function D
    *  //
    *  // advantages: better readabilty, automatic error names for each function
-   * @example
-   * // respond from db with error handling
-   * db.user.groups  // send all groups back to client
-   *   .find({})
-   *   .exec(res.send);
+   *  ```
    */
    self.send = function (err, docs, callback) {
       if (!err && callback) {
@@ -76,86 +77,73 @@ module.exports = function (res) {
    }
 
 
-   /** @function error
-    * @desc default error; try to extract an error code from err
-    * @param err every datatype allowed
-    * @example res.error("statusRed");
-    */
+   /** ### res.errors
+     * Send back error with specific error code
+     *  ```js
+     * res.error("statusRed")
+     * // status 500; standard error; if error isn't handeled
+     * ```
+     */
    self.error = function (err) {
       err = handleError(err)
-      self.errorInternal('Server Error: ' + err)
+      send('Server Error: ' + err, null, res, 500)
       log.error('Server Error: ' + err)
    }
 
 
-   /** @function errorInternal
-    * @desc error 500: if error isn't handeled
-    * @param err string
-    * @example res.errorInternal("Database error");
-    */
-   self.errorInternal = function (err) {
-      send('Internal Error: ' + err, null, res, 500)
-   }
-
-
-   /** @function errorBadRequest
-    * @desc error 400: missing or wrong parameters
-    * @param err string
-    * @example res.errorBadRequest("Missing id");
-    */
+   /** ```js
+     * res.errorBadRequest("Missing id")
+     * // status 400; missing or wrong parameters
+     * ```
+     */
    self.errorBadRequest = function (err) {
       send('Bad request: ' + err, null, res, 400)
    }
 
 
-   /** @function errorAuthorizationRequired
-    * @desc error 401: not autorized for route
-    * @param err string
-    * @example res.errorAuthorizationRequired();
+   /** ```js
+    * res.errorAuthorizationRequired()
+    * // status 401; not autorized for route
+    * ```
     */
    self.errorAuthorizationRequired = function () {
       send('Authorization required!', null, res, 401)
    }
 
 
-   /** @function errorAccessDenied
-    * @desc error 403: request not allowed for user
-    * @param err string
-    * @example res.errorAccessDenied("You need be admin");
+   /** ```js
+    * res.errorAccessDenied("You need be admin")
+    * // status 403; request not allowed for user
+    * ```
     */
    self.errorAccessDenied = function (err) {
       send('Access denied: ' + err, null, res, 403)
    }
 
 
-   /** @function errorNotFound
-    * @desc error 404: not found or not available
-    * @param err string
-    * @example res.errorNotFound("No user found");
+   /** ```js
+    * res.errorNotFound("No user found")
+    * // status 404; not found or not available
+    * ```
     */
    self.errorNotFound = function (err) {
       send('Not found: ' + err, null, res, 404)
    }
 
 
-   /** @function errorAlreadyExists
-    * @desc error 409: already exists
-    * @param err string
-    * @example res.errorAlreadyExists();
+   /** ```js
+    * res.errorAlreadyExists("User exists")
+    * // status 409
+    * ```
     */
    self.errorAlreadyExists = function (err) {
       send('Already Exists: ' + err, null, res, 409)
    }
 
-   /**
-    * ### res.errorNoLongerExists()
-    * ```js
-    *  res.errorNoLongerExists("User is gone");
+   /** ```js
+    * res.errorNoLongerExists("User is gone")
+    * // status 410; tried to save an entry wich was removed?
     * ```
-    * error 410: tried to save an entry wich was removed
-    * @param err string
-    * @example
-    * res.errorNoLongerExists("User is gone");
     */
    self.errorNoLongerExists = function (err) {
       send(err, null, res, 410)

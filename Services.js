@@ -1,6 +1,6 @@
 /**
-  * # Services
-  * plug in functions from other modules
+  * ## services
+  * provide plugged in functions from other rf-api-* modules
   */
 
 
@@ -11,21 +11,27 @@ var _Services = {}
 module.exports = function (res) {
    var self = this
 
-   /** @var res
-    * @desc express response for error handling and sending docs; public to registred functions
-    */
+   // express response for error handling and sending docs; public to registred functions
    self.res = res
 
-   /** @var Services
-    * @desc public var that holds all registred services
-    */
+   // public var that holds all registred services
    self.Services = _Services
 
 
-   /**
-    * function: register functions from other server modules
-    * @example
-    * // register a function
+   /** ### Register functions
+    * Example: use the services
+    * ```js
+    * var API = require("rf-load").require("API");
+    *
+    *  API.post("get-pdf", function(req, res, services) {
+    *    services.createPdf(req.data, function (pdf){
+    *          var corrected = processPdf(pdf)
+    *          res.send(corrected)
+    *    })
+    *  })
+    * ```
+    * Example: register functions from other server modules
+    * ```js
     * var Services = require("rf-load").require("API").Services;
     * function createPdf(url, callback){
     *   var res = this.res // get response from parent service
@@ -38,18 +44,7 @@ module.exports = function (res) {
     *   })
     * }
     * Services.register(createPdf)
-    *
-    * @example
-    * // execute a registred service function
-    * var API = require("rf-load").require("API");
-    *
-    *  API.post("get-pdf", function(req, res, services) {
-    *    services.createPdf(req.data, function (pdf){
-    *          var corrected = processPdf(pdf)
-    *          res.send(corrected)
-    *    })
-    *  })
-    *
+    * ```
     */
    self.registerFunction = function (newFunction) {
       var newFunctionName = newFunction.name
