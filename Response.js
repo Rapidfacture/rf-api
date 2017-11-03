@@ -72,7 +72,7 @@ module.exports = function (res) {
       if (!err && callback) {
          callback(docs)
       } else {
-         send(err, docs)
+         send(err, docs, res)
       }
    }
 
