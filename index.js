@@ -67,21 +67,21 @@ module.exports.API = {
    * ```
    */
 
+   Services: Services,
+
    get: function (functionName, func, settings) {
       app.get('/' + functionName, function (req, res, next) {
          log.info('GET: ' + functionName)
-         func(new Request(req), new Response(res), new Services(res).Services)
+         func(new Request(req), new Response(res), Services.Services)
       })
    },
 
    post: function (functionName, func, settings) {
       app.post('/' + functionName, function (req, res, next) {
          log.info('POST: ' + functionName)
-         func(new Request(req), new Response(res), new Services(res).Services)
+         func(new Request(req), new Response(res), Services.Services)
       })
-   },
-
-   Services: Services
+   }
 
 }
 
