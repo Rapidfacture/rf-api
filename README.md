@@ -75,7 +75,7 @@ default response function; adds error handling
 
 Example: Simple
 ```js
-res.error("statusRed");
+res.send(err, data);
 ```
 
 Example: respond from db with error handling
