@@ -13,6 +13,8 @@
  * ```
  */
 
+var log = require('rf-log')
+
 module.exports = function (req) {
    var self = this
 
@@ -40,6 +42,16 @@ module.exports = function (req) {
       self.data = req.body.data || {}
    } else if (req.method) {
       // Decode data to get a data body
-      self.data = (req.query.data ? JSON.parse(Buffer.from(req.query.data, 'base64').toString()) : {})
+      var decoded = {}
+
+      try {
+         decoded = req.query.data
+         decoded = Buffer.from(decoded, 'base64')
+         decoded = decoded.toString()
+      } catch (e) {
+         log.error(e)
+      }
+
+      self.data = decoded
    }
 }
