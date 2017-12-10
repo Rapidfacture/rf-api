@@ -28,7 +28,7 @@
  * load.file('http')
  *
  * // start request api
- * load.file('rf-api')
+ * load.module('rf-api')
  *
  * // plug in other modules into the api
  * load.module("rf-api-mailer");

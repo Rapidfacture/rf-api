@@ -160,63 +160,26 @@ res.errorNoLongerExists("User is gone")
 ```
 
 ## services
-Provide plugged in functions from other rf-api-* modules.
+provide plugged in functions from other rf-api-* modules
 
-How to use the services in our code:
+### Register functions
+Example: use the services
 ```js
 var API = require("rf-load").require("API");
 
-// example: make pdf from client input request,
-// automatic error handling via rf-api
-API.post("get-pdf", function(req, res, services) {
-  services.createPdf(req.data, res.send)
-})
-
-// example: custom error
-API.post("get-pdf", function(req, res, services) {
-   services.createPdf(req.data, function (err, pdf){
-         if (err){
-            res.send("pdf error")
-            console.log("pdf error: " + err)
-         }else {
-            res.send(null, pdf)
-         }
+ API.post("get-pdf", function(req, res, services) {
+   services.createPdf(req.data, function (pdf){
+         var corrected = processPdf(pdf)
+         res.send(corrected)
    })
-})
-
-
+ })
 ```
-
-#### Plugin functions into the services
-
-Put it in your package.json, then ...
-
-> npm install
-
-Then load it via `rf-load`
-
-```js
-// ... start everything
-
-// start rf-api
-load.module('rf-api')
-
-// plug in the module
-load.module("rf-api-url2pdf");
-```
-
-
-#### Create a Plugin
-
-* Require the `API` module via `rf-load`
-* register the new function
-
- Your function should have a callback with the parameters (err, docs). This gives the possibility to return errors as well as the processed data.
-
+Example: register functions from other server modules
 ```js
 var Services = require("rf-load").require("API").Services;
 function createPdf(url, callback){
   createdPdfDoc(url, function(err, pdf){
+      // callback always has the parameters mongoose like: err, docs
       callback(err, pdf)
   })
 }

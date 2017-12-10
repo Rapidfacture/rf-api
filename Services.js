@@ -27,13 +27,9 @@ module.exports = {
     * ```js
     * var Services = require("rf-load").require("API").Services;
     * function createPdf(url, callback){
-    *   var res = this.res // get response from parent service
     *   createdPdfDoc(url, function(err, pdf){
-    *       if(err){
-    *          res.error(err)
-    *       }else{
-    *          callback(pdf)
-    *       }
+    *       // callback always has the parameters mongoose like: err, docs
+    *       callback(err, pdf)
     *   })
     * }
     * Services.register(createPdf)
