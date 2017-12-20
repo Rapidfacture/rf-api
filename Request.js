@@ -47,7 +47,7 @@ module.exports = function (req) {
       try {
          decoded = req.query.data
          decoded = Buffer.from(decoded, 'base64')
-         decoded = decoded.toString()
+         decoded = JSON.parse(decoded.toString())
       } catch (e) {
          log.error(e)
       }
