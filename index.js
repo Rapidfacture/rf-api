@@ -36,13 +36,12 @@
  *
  */
 
-
 var log = require('rf-log'),
    app = require('rf-load').require('http').app,
    Request = require('./Request.js'),
    Response = require('./Response.js'),
-   Services = require('./Services')
-
+   Services = require('./Services'),
+   config = require('rf-config')
 
 module.exports.API = {
 
@@ -70,19 +69,69 @@ module.exports.API = {
    Services: Services,
 
    get: function (functionName, func, settings) {
+      var self = this
       app.get('/' + functionName, function (req, res, next) {
          log.info('GET: ' + functionName)
-         func(new Request(req), new Response(res), Services.Services)
+         req = new Request(req)
+         res = new Response(res)
+         self.checkAcl(settings, req).then(function () {
+            func(req, res, Services.Services)
+         }).catch(function (e) {
+            res.errorAccessDenied(functionName + ' not allowed!')
+         })
       })
    },
 
    post: function (functionName, func, settings) {
+      var self = this
       app.post('/' + functionName, function (req, res, next) {
          log.info('POST: ' + functionName)
-         func(new Request(req), new Response(res), Services.Services)
+         req = new Request(req)
+         res = new Response(res)
+         self.checkAcl(settings, req).then(function () {
+            func(req, res, Services.Services)
+         }).catch(function (e) {
+            res.errorAccessDenied(functionName + ' not allowed!')
+         })
+      })
+   },
+
+   checkAcl: (settings, req) => {
+      return new Promise((resolve, reject) => {
+         if (!settings || !settings.section) {
+            // This is the protection that no one misses to add the protection explicit
+            return reject(new Error('No settings defined! Protected by default'))
+         } else {
+            // If the settings.permission set but empty the route isn't protected
+            if (settings.permission === false) {
+               return resolve()
+            }
+
+            // Check if user has app config rights configured
+            if (!req.rights.hasOwnProperty(config.app.name)) {
+               return reject(new Error('Access denied'))
+            }
+
+            var rights = req.rights[config.app.name]
+
+            if (!rights.hasOwnProperty(settings.section)) {
+               return reject(new Error('No section defined for route! Protected by default'))
+            }
+
+            if (!rights[settings.section].hasOwnProperty(settings.permission) ||
+               rights[settings.section][settings.permission] === false ||
+               rights[settings.section][settings.permission].length <= 0) {
+               return reject(new Error('Access denied! Insufficient permissions!'))
+            }
+
+            if (!req.tokenValid) {
+               return reject(new Error('Access denied! Token expired!'))
+            }
+
+            resolve()
+         }
       })
    }
-
 }
 
 module.exports.start = function (options, next) {
