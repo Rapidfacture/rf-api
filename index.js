@@ -77,7 +77,11 @@ module.exports.API = {
          self.checkAcl(settings, req).then(function () {
             func(req, res, Services.Services)
          }).catch(function (e) {
-            res.errorAccessDenied(functionName + ' not allowed!')
+            if (e.code === 401) {
+               res.errorAuthorizationRequired(functionName + ' not allowed!')
+            } else {
+               res.errorAccessDenied(functionName + ' not allowed!')
+            }
          })
       })
    },
@@ -91,41 +95,57 @@ module.exports.API = {
          self.checkAcl(settings, req).then(function () {
             func(req, res, Services.Services)
          }).catch(function (e) {
-            res.errorAccessDenied(functionName + ' not allowed!')
+            if (e.code === 401) {
+               res.errorAuthorizationRequired(functionName + ' token invalid!')
+            } else {
+               res.errorAccessDenied(functionName + ' not allowed!')
+            }
          })
       })
    },
 
    checkAcl: (settings, req) => {
       return new Promise((resolve, reject) => {
+         var err = new Error()
          if (!settings || !settings.section) {
             // This is the protection that no one misses to add the protection explicit
-            return reject(new Error('No settings defined! Protected by default'))
+            err.message = 'No settings defined! Protected by default'
+            err.code = 403
+            return reject(err)
          } else {
             // If the settings.permission set but empty the route isn't protected
             if (settings.permission === false) {
                return resolve()
             }
 
+            // First check if the token is valid
+            if (!req.tokenValid) {
+               err.message = 'Access denied! Token expired!'
+               err.code = 401
+               return reject(err)
+            }
+
             // Check if user has app config rights configured
             if (!req.rights.hasOwnProperty(config.app.name)) {
-               return reject(new Error('Access denied'))
+               err.message = 'Access denied!'
+               err.code = 403
+               return reject(err)
             }
 
             var rights = req.rights[config.app.name]
 
             if (!rights.hasOwnProperty(settings.section)) {
-               return reject(new Error('No section defined for route! Protected by default'))
+               err.message = 'Access denied! No section defined for route! Protected by default'
+               err.code = 403
+               return reject(err)
             }
 
             if (!rights[settings.section].hasOwnProperty(settings.permission) ||
                rights[settings.section][settings.permission] === false ||
                rights[settings.section][settings.permission].length <= 0) {
-               return reject(new Error('Access denied! Insufficient permissions!'))
-            }
-
-            if (!req.tokenValid) {
-               return reject(new Error('Access denied! Token expired!'))
+               err.message = 'Access denied! Insufficient permissions!'
+               err.code = 403
+               return reject(err)
             }
 
             resolve()
