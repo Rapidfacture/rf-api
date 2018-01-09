@@ -27,6 +27,12 @@ module.exports = function (req) {
    // Set token if available
    self.token = req._token || null
 
+   // Is the presented token valid
+   self.tokenValid = req._tokenValid || false
+
+   // Set decoded if available
+   self.decoded = req._decoded || null
+
    self.user = null
    self.rights = null
 
@@ -40,14 +46,20 @@ module.exports = function (req) {
    // Decode data depending on the request method
    if (req.method === 'POST') {
       self.data = req.body.data || {}
-   } else if (req.method) {
+   } else if (req.method === 'GET') {
       // Decode data to get a data body
       var decoded = {}
 
       try {
-         decoded = req.query.data
-         decoded = Buffer.from(decoded, 'base64')
-         decoded = JSON.parse(decoded.toString())
+         if (req.query.data) {
+            decoded = Buffer.from(req.query.data, 'base64')
+            decoded = decoded.toString()
+            if (decoded) {
+               decoded = JSON.parse(decoded.toString())
+            } else {
+               decoded = null
+            }
+         }
       } catch (e) {
          log.error(e)
       }
