@@ -69,7 +69,7 @@ module.exports = function (res) {
    *  ```
    */
    self.send = function (err, docs, callback) {
-      if (!err && callback) {
+      if (!err && callback && typeof(callback) === 'function') {
          callback(docs)
       } else {
          send(err, docs, res)
