@@ -140,9 +140,10 @@ module.exports.API = {
                return reject(err)
             }
 
-            if (!rights[settings.section].hasOwnProperty(settings.permission) ||
-               rights[settings.section][settings.permission] === false ||
-               rights[settings.section][settings.permission].length <= 0) {
+            var requiredPermission = (req.originalRequest.method === 'GET' ? 'read' : 'write')
+            if (!rights[settings.section].hasOwnProperty(requiredPermission) ||
+               rights[settings.section][requiredPermission] === false ||
+               rights[settings.section][requiredPermission].length <= 0) {
                err.message = 'Access denied! Insufficient permissions!'
                err.code = 403
                return reject(err)
