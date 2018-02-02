@@ -4,8 +4,8 @@
   "description": "API helper functions.",
   "license": "MIT",
   "repository": {
-     "type": "git",
-     "url": "git@github.com:RAPIDFACTURE/rf-api.git"
+    "type": "git",
+    "url": "git@github.com:RAPIDFACTURE/rf-api.git"
   },
   "main": "index.js",
   "scripts": {
