@@ -9,7 +9,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "prepublish": "npm run-script doc && sh test/isRepoClean && npm test",
+    "prepublish": "npm run-script doc && npm test",
     "test": "grunt",
     "doc": "cat index.js Request.js Response.js Services.js > out.js && node_modules/mdextract/bin/mdextract out.js > README.md && rm out.js"
   },
