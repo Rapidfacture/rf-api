@@ -78,9 +78,11 @@ module.exports.API = {
             func(req, res, Services.Services)
          }).catch(function (e) {
             if (e.code === 401) {
-               res.errorAuthorizationRequired(functionName + ' not allowed!')
+               res.errorAuthorizationRequired(
+                  `${functionName} not allowed ! ${e.message}`)
             } else {
-               res.errorAccessDenied(functionName + ' not allowed!')
+               res.errorAccessDenied(
+                  `${functionName} not allowed! ${e.message}`)
             }
          })
       })
@@ -96,9 +98,11 @@ module.exports.API = {
             func(req, res, Services.Services)
          }).catch(function (e) {
             if (e.code === 401) {
-               res.errorAuthorizationRequired(functionName + ' token invalid!')
+               res.errorAuthorizationRequired(
+                  `${functionName} token invalid! ${e.message}`)
             } else {
-               res.errorAccessDenied(functionName + ' not allowed!')
+               res.errorAccessDenied(
+                  `${functionName} not allowed! ${e.message}`)
             }
          })
       })
