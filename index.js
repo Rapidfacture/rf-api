@@ -44,7 +44,6 @@ var log = require('rf-log'),
    config = require('rf-config')
 
 module.exports.API = {
-
    /**
    * ## Usage
    *
@@ -65,6 +64,7 @@ module.exports.API = {
    * });
    * ```
    */
+   acl: true,
 
    Services: Services,
 
@@ -105,8 +105,10 @@ module.exports.API = {
    },
 
    checkAcl: (settings, req) => {
+      var self = this
       return new Promise((resolve, reject) => {
          var err = new Error()
+
          if (!settings || !settings.section) {
             // This is the protection that no one misses to add the protection explicit
             err.message = 'No settings defined! Protected by default'
@@ -114,7 +116,7 @@ module.exports.API = {
             return reject(err)
          } else {
             // If the settings.permission set but empty the route isn't protected
-            if (settings.permission === false) {
+            if (settings.permission === false || !self.API.acl) {
                return resolve()
             }
 
