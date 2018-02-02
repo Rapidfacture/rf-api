@@ -140,8 +140,12 @@ module.exports.API = {
 
             var rights = req.rights[config.app.name]
 
-            if (!rights.hasOwnProperty(settings.section)) {
-               err.message = 'Access denied! No section defined for route! Protected by default'
+            if (!settings.section) {
+              err.message = `Access denied! No section defined for route - protected by default`;
+              err.code = 403
+              return reject(err)
+            } else if (!rights.hasOwnProperty(settings.section)) {
+               err.message = `Access denied! Section not found in rights: ${settings.section}`;
                err.code = 403
                return reject(err)
             }
