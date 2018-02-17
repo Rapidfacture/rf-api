@@ -13,57 +13,57 @@
  * ```
  */
 
-var log = require('rf-log')
+var log = require('rf-log');
 
 module.exports = function (req) {
-   var self = this
+   var self = this;
 
    // Original Request
-   self.originalRequest = req
+   self.originalRequest = req;
 
    // Set session if available
-   self.session = req._session || null
+   self.session = req._session || null;
 
    // Set token if available
-   self.token = req._token || null
+   self.token = req._token || null;
 
    // Is the presented token valid
-   self.tokenValid = req._tokenValid || false
+   self.tokenValid = req._tokenValid || false;
 
    // Set decoded if available
-   self.decoded = req._decoded || null
+   self.decoded = req._decoded || null;
 
-   self.user = null
-   self.rights = null
+   self.user = null;
+   self.rights = null;
 
    if (self.session) {
-      self.user = self.session.user
-      self.rights = self.session.rights
+      self.user = self.session.user;
+      self.rights = self.session.rights;
    }
 
-   self.data = {}
+   self.data = {};
 
    // Decode data depending on the request method
    if (req.method === 'POST') {
-      self.data = req.body.data || {}
+      self.data = req.body.data || {};
    } else if (req.method === 'GET') {
       // Decode data to get a data body
-      var decoded = {}
+      var decoded = {};
 
       try {
          if (req.query.data) {
-            decoded = Buffer.from(req.query.data, 'base64')
-            decoded = decoded.toString()
+            decoded = Buffer.from(req.query.data, 'base64');
+            decoded = decoded.toString();
             if (decoded) {
-               decoded = JSON.parse(decoded.toString())
+               decoded = JSON.parse(decoded.toString());
             } else {
-               decoded = null
+               decoded = null;
             }
          }
       } catch (e) {
-         log.error(e)
+         log.error(e);
       }
 
-      self.data = decoded
+      self.data = decoded;
    }
-}
+};

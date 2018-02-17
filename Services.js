@@ -4,7 +4,7 @@
   */
 
 
-var log = require('rf-log')
+var log = require('rf-log');
 
 module.exports = {
    // public var that holds all registred services
@@ -36,15 +36,15 @@ module.exports = {
     * ```
     */
    registerFunction: function (newFunction) {
-      var self = this
-      var newFunctionName = newFunction.name
+      var self = this;
+      var newFunctionName = newFunction.name;
       if (!self.Services[newFunctionName]) {
-         self.Services[newFunctionName] = newFunction
+         self.Services[newFunctionName] = newFunction;
       } else {
-         log.critical('tried to register function ' + newFunctionName + ' in API, it but already exists.')
+         log.critical('tried to register function ' + newFunctionName + ' in API, it but already exists.');
       }
    }
-}
+};
 
 
 

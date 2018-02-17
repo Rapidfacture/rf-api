@@ -5,14 +5,14 @@
  */
 
 
-var log = require('rf-log')
+var log = require('rf-log');
 
 
 module.exports = function (res) {
    // makes 'this' usable within child functions
-   var self = this
+   var self = this;
 
-   self.originalResponse = res
+   self.originalResponse = res;
 
 
    /** ### res.send()
@@ -69,12 +69,12 @@ module.exports = function (res) {
    *  ```
    */
    self.send = function (err, docs, callback) {
-      if (!err && callback && typeof(callback) === 'function') {
-         callback(docs)
+      if (!err && callback && typeof (callback) === 'function') {
+         callback(docs);
       } else {
-         send(err, docs, res)
+         send(err, docs, res);
       }
-   }
+   };
 
 
    /** ### res.errors
@@ -85,10 +85,10 @@ module.exports = function (res) {
      * ```
      */
    self.error = function (err) {
-      err = handleError(err)
-      send('Server Error: ' + err, null, res, 500)
-      log.error('Server Error: ' + err)
-   }
+      err = handleError(err);
+      send('Server Error: ' + err, null, res, 500);
+      log.error('Server Error: ' + err);
+   };
 
 
    /** ```js
@@ -97,8 +97,8 @@ module.exports = function (res) {
      * ```
      */
    self.errorBadRequest = function (err) {
-      send('Bad request: ' + err, null, res, 400)
-   }
+      send('Bad request: ' + err, null, res, 400);
+   };
 
 
    /** ```js
@@ -107,8 +107,8 @@ module.exports = function (res) {
     * ```
     */
    self.errorAuthorizationRequired = function () {
-      send('Authorization required!', null, res, 401)
-   }
+      send('Authorization required!', null, res, 401);
+   };
 
 
    /** ```js
@@ -117,8 +117,8 @@ module.exports = function (res) {
     * ```
     */
    self.errorAccessDenied = function (err) {
-      send('Access denied: ' + err, null, res, 403)
-   }
+      send('Access denied: ' + err, null, res, 403);
+   };
 
 
    /** ```js
@@ -127,8 +127,8 @@ module.exports = function (res) {
     * ```
     */
    self.errorNotFound = function (err) {
-      send('Not found: ' + err, null, res, 404)
-   }
+      send('Not found: ' + err, null, res, 404);
+   };
 
 
    /** ```js
@@ -137,8 +137,8 @@ module.exports = function (res) {
     * ```
     */
    self.errorAlreadyExists = function (err) {
-      send('Already Exists: ' + err, null, res, 409)
-   }
+      send('Already Exists: ' + err, null, res, 409);
+   };
 
    /** ```js
     * res.errorNoLongerExists("User is gone")
@@ -146,9 +146,9 @@ module.exports = function (res) {
     * ```
     */
    self.errorNoLongerExists = function (err) {
-      send(err, null, res, 410)
-   }
-}
+      send(err, null, res, 410);
+   };
+};
 
 
 /* -------------- helper functions ----------------- */
@@ -157,19 +157,19 @@ module.exports = function (res) {
 function send (err, docs, res, status) {
 // handle requests
    if (err) {
-      status = status || 500
-      err = handleError(err)
+      status = status || 500;
+      err = handleError(err);
 
       res
          .status(status)
          .send(err)
-         .end()
+         .end();
    } else { // success; last step
-      status = status || 200
+      status = status || 200;
       res
          .status(status)
          .json(docs)
-         .end()
+         .end();
    }
 }
 
@@ -180,10 +180,10 @@ function handleError (err) {
 
    if (typeof err === 'object') {
       // MongoDB Unique Error
-      if (err.code === 11000) return err.errmsg
+      if (err.code === 11000) return err.errmsg;
       // else
-      return JSON.stringify(err)
+      return JSON.stringify(err);
    }
 
-   return err
+   return err;
 }
