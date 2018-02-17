@@ -20,8 +20,7 @@
     "mdextract": "1.0.0"
   },
   "peerDependencies": {
-    "rf-log": "0.1.2",
-    "rf-load": "0.1.9"
+    "rf-load": "^0.1.9"
   },
   "author": {
     "name": "Felix Furtmayr"

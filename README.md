@@ -31,6 +31,17 @@ load.module('rf-api')
 
 // plug in other modules into the api
 load.module("rf-api-mailer");
+
+
+load.func(function (options, next) {
+   API.startApiFiles(config.paths.apis, function(startApi){
+      var db = require('rf-load').require('db').db;
+      var API = require('rf-load').require('rf-api').API;
+      startApi(db, API);
+   })
+   next();
+ });
+
 ```
 
 ## Usage
