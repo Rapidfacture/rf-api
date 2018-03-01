@@ -83,9 +83,22 @@ module.exports.API = {
    get: function (functionName, func, settings) {
       var self = this;
       app.get('/' + functionName, function (req, res, next) {
-         log.info('GET: ' + functionName);
+         // Check magic token
+         // This needs to be activated on a per-endpoint basis in settings
+         const internalToken = req.query.internal;
+         const internalTokenValid = settings && settings.internalToken &&
+             settings.internalToken === internalToken;
+         // Log request
+         log.info(
+             'GET: ' + functionName +
+             (internalTokenValid ? ' (Internal token authenticated)' : ''));
          req = new Request(req);
          res = new Response(res);
+         // Skip ACL if internal token is valid
+         if (internalTokenValid) {
+           return func(req, res, Services.Services);
+         }
+         // No internal token => check ACL
          self.checkAcl(settings, req).then(function () {
             func(req, res, Services.Services);
          }).catch(function (e) {
