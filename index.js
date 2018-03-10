@@ -49,7 +49,7 @@
 
 var log = require('rf-log'),
    fs = require('fs'),
-   app = require('rf-load').require('http').app,
+   app = null,
    Request = require('./Request.js'),
    Response = require('./Response.js'),
    Services = require('./Services'),
@@ -228,5 +228,6 @@ module.exports.API = {
 };
 
 module.exports.start = function (options, next) {
+   app = options.app || require('rf-load').require('http').app;
    next();
 };

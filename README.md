@@ -197,10 +197,6 @@ function createPdf(url, callback){
 Services.register(createPdf)
 ```
 
-## PeerDependencies
-* `rf-log`
-* `rf-load`
-
 ## Development
 
 Install the dev tools with

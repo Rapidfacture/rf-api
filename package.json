@@ -19,9 +19,6 @@
     "grunt-eslint": "20.1.0",
     "mdextract": "1.0.0"
   },
-  "peerDependencies": {
-    "rf-load": "^0.1.9"
-  },
   "author": {
     "name": "Felix Furtmayr"
   },

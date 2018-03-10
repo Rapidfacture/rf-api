@@ -50,10 +50,6 @@ module.exports = {
 
 /**
 *
-* ## PeerDependencies
-* * `rf-log`
-* * `rf-load`
-*
 * ## Development
 *
 * Install the dev tools with
