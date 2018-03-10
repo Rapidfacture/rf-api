@@ -229,5 +229,5 @@ module.exports.API = {
 
 module.exports.start = function (options, next) {
    app = options.app || require('rf-load').require('http').app;
-   next();
+   if (next) next();
 };
