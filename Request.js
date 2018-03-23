@@ -49,16 +49,9 @@ module.exports = function (req) {
    } else if (req.method === 'GET') {
       // Decode data to get a data body
       var decoded = {};
-
       try {
          if (req.query.data) {
-            decoded = Buffer.from(req.query.data, 'base64');
-            decoded = decoded.toString();
-            if (decoded) {
-               decoded = JSON.parse(decoded.toString());
-            } else {
-               decoded = null;
-            }
+            decoded = JSON.parse(req.query.data);
          }
       } catch (e) {
          log.error(e);
