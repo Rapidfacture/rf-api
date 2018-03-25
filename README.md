@@ -57,11 +57,11 @@ Note:
 
 ```js
 // for read only stuff
-API.get('funcName', function(req, res, services) {
+API.get('funcName', function(req, res) {
     // code to process the request here
 });
 // for stuff with write access
-API.post('funcName', function(req, res, services) {
+API.post('funcName', function(req, res) {
     // code to process the request here
 });
 ```
@@ -177,20 +177,9 @@ res.errorNoLongerExists("User is gone")
 provide plugged in functions from other rf-api-* modules
 
 ### Register functions
-Example: use the services
-```js
-var API = require("rf-load").require("API");
-
- API.post("get-pdf", function(req, res, services) {
-   services.createPdf(req.data, function (pdf){
-         var corrected = processPdf(pdf)
-         res.send(corrected)
-   })
- })
-```
 Example: register functions from other server modules
 ```js
-var Services = require("rf-load").require("API").Services;
+var Services = API.Services;
 function createPdf(url, callback){
   createdPdfDoc(url, function(err, pdf){
       // callback always has the parameters mongoose like: err, docs
@@ -212,7 +201,6 @@ Generate Docs:
 
 ## To Do
 * testing
-* create a grunt task for mdextract
 ## Legal Issues
 * License: MIT
 * Author: Rapidfacture GmbH

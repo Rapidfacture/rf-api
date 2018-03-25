@@ -12,17 +12,6 @@ module.exports = {
 
 
    /** ### Register functions
-    * Example: use the services
-    * ```js
-    * var API = require("rf-load").require("API");
-    *
-    *  API.post("get-pdf", function(req, res, services) {
-    *    services.createPdf(req.data, function (pdf){
-    *          var corrected = processPdf(pdf)
-    *          res.send(corrected)
-    *    })
-    *  })
-    * ```
     * Example: register functions from other server modules
     * ```js
     * var Services = require("rf-load").require("API").Services;
@@ -63,7 +52,6 @@ module.exports = {
 *
 * ## To Do
 * * testing
-* * create a grunt task for mdextract
 * ## Legal Issues
 * * License: MIT
 * * Author: Rapidfacture GmbH
