@@ -19,44 +19,63 @@
  *
  *
  * ```js
- * var Loader = require('rf-load').moduleLoader
- * var load = new Loader()
- * load.setModulePath(config.paths.modules)
  *
- * // other stuff
- * load.file('db')
- * load.file('http')
+ * // prepare backend
+ * var config = require('rf-config').init(__dirname); // config
+ * var mongooseMulti = require('mongoose-multi'); // databases
+ * var db = mongooseMulti.start(config.db.urls, config.paths.schemas);
+ * var http = require('rf-http').start({ // webserver
+ *    pathsWebserver: config.paths.webserver,
+ *    port: config.port
+ * });
  *
- * // start request api
- * load.module('rf-api')
+ * // prepare api
+ * var API = require('rf-api').start({app: http.app}); // needs express app
  *
- * // plug in other modules into the api
- * load.module("rf-api-mailer");
+ * db.global.mongooseConnection.once('open', function () {
+ *    // optional: start access control; has to be done before starting the websocket
+ *    require('rf-acl').start({
+ *       API: API,
+ *       db: db,
+ *       app: http.app,
+ *       sessionSecret: dbSettings.sessionSecret.value
+ *    });
  *
- *
- * load.func(function (options, next) {
- *    API.startApiFiles(config.paths.apis, function(startApi){
- *       var db = require('rf-load').require('db').db;
- *       var API = require('rf-load').require('rf-api').API;
- *       startApi(db, API);
- *    })
- *    next();
- *  });
+ *    // start requests
+ *    API.startApiFiles(config.paths.apis, function (startApi) {
+ *       startApi(db, API, services);
+ *    });
+ * });
  *
  * ```
  *
  */
 
-var log = require('rf-log'),
-   fs = require('fs'),
+var fs = require('fs'),
    app = null,
    Request = require('./Request.js'),
    Response = require('./Response.js'),
    Services = require('./Services'),
    config = require('rf-config');
 
+
+   // logging
+var log = {
+   info: console.log,
+   success: console.log,
+   error: console.error,
+   critical: function () {
+      throw new Error(console.error.apply(arguments));
+   }
+};
+try { // try using rf-log
+   log = require(require.resolve('rf-log')).customPrefixLogger('[rf-api]');
+} catch (e) {}
+
+
 module.exports.API = {
    /**
+   *
    * ## Usage
    *
    * Note:
@@ -64,8 +83,6 @@ module.exports.API = {
    * * name your request properly
    *
    * ```js
-   * var API = require("rf-load").require("rf-api").API
-   *
    * // for read only stuff
    * API.get('funcName', function(req, res, services) {
    *     // code to process the request here
@@ -191,8 +208,6 @@ module.exports.API = {
 
    //
    //  API.startApiFiles(config.paths.apis, function(startApi){
-   //    var db = require('rf-load').require('db').db;
-   //    var API = require('rf-load').require('rf-api').API;
    //    startApi(db, API);
    //  })
    //
@@ -228,7 +243,10 @@ module.exports.API = {
 };
 
 module.exports.start = function (options, next) {
-   app = options.app || require('rf-load').require('http').app;
+
+   if (!options.app) log.critical('"app" is undefined. An expres app instance is needed!');
+
+   app = options.app;
    if (next) next();
    return module.exports.API;
 };

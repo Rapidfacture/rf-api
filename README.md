@@ -18,30 +18,35 @@ To install the module:
 
 
 ```js
-var Loader = require('rf-load').moduleLoader
-var load = new Loader()
-load.setModulePath(config.paths.modules)
-
-// other stuff
-load.file('db')
-load.file('http')
-
-// start request api
-load.module('rf-api')
-
-// plug in other modules into the api
-load.module("rf-api-mailer");
 
 
-load.func(function (options, next) {
-   API.startApiFiles(config.paths.apis, function(startApi){
-      var db = require('rf-load').require('db').db;
-      var API = require('rf-load').require('rf-api').API;
-      startApi(db, API);
-   })
-   next();
+// prepare backend
+var config = require('rf-config').init(__dirname); // config
+var mongooseMulti = require('mongoose-multi'); // databases
+var db = mongooseMulti.start(config.db.urls, config.paths.schemas);
+var http = require('rf-http').start({ // webserver
+   pathsWebserver: config.paths.webserver,
+   port: config.port
+});
+
+// prepare api
+var API = require('rf-api').start({app: http.app}); // needs express app
+
+db.global.mongooseConnection.once('open', function () {
+
+ // optional: start access control; has to be done before starting the websocket
+ require('rf-acl').start({
+    API: API,
+    db: db,
+    app: http.app,
+    sessionSecret: dbSettings.sessionSecret.value
  });
 
+ // start requests
+ API.startApiFiles(config.paths.apis, function (startApi) {
+    startApi(db, API, services);
+ });
+});
 ```
 
 ## Usage
@@ -51,8 +56,6 @@ Note:
 * name your request properly
 
 ```js
-var API = require("rf-load").require("rf-api").API
-
 // for read only stuff
 API.get('funcName', function(req, res, services) {
     // code to process the request here
