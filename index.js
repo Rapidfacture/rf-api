@@ -84,11 +84,11 @@ module.exports.API = {
    *
    * ```js
    * // for read only stuff
-   * API.get('funcName', function(req, res, services) {
+   * API.get('funcName', function(req, res) {
    *     // code to process the request here
    * });
    * // for stuff with write access
-   * API.post('funcName', function(req, res, services) {
+   * API.post('funcName', function(req, res) {
    *     // code to process the request here
    * });
    * ```

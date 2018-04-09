@@ -19,7 +19,6 @@ To install the module:
 
 ```js
 
-
 // prepare backend
 var config = require('rf-config').init(__dirname); // config
 var mongooseMulti = require('mongoose-multi'); // databases
@@ -33,20 +32,22 @@ var http = require('rf-http').start({ // webserver
 var API = require('rf-api').start({app: http.app}); // needs express app
 
 db.global.mongooseConnection.once('open', function () {
+   // optional: start access control; has to be done before starting the websocket
+   require('rf-acl').start({
+      API: API,
+      db: db,
+      app: http.app,
+      sessionSecret: dbSettings.sessionSecret.value
+   });
 
- // optional: start access control; has to be done before starting the websocket
- require('rf-acl').start({
-    API: API,
-    db: db,
-    app: http.app,
-    sessionSecret: dbSettings.sessionSecret.value
- });
-
+```js
  // start requests
  API.startApiFiles(config.paths.apis, function (startApi) {
     startApi(db, API, services);
  });
 });
+```
+
 ```
 
 ## Usage
@@ -179,7 +180,7 @@ provide plugged in functions from other rf-api-* modules
 ### Register functions
 Example: register functions from other server modules
 ```js
-var Services = API.Services;
+var Services = API.Services.Services;
 function createPdf(url, callback){
   createdPdfDoc(url, function(err, pdf){
       // callback always has the parameters mongoose like: err, docs

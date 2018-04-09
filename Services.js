@@ -14,7 +14,7 @@ module.exports = {
    /** ### Register functions
     * Example: register functions from other server modules
     * ```js
-    * var Services = require("rf-load").require("API").Services;
+    * var Services = API.Services.Services;
     * function createPdf(url, callback){
     *   createdPdfDoc(url, function(err, pdf){
     *       // callback always has the parameters mongoose like: err, docs
