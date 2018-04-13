@@ -166,11 +166,18 @@ module.exports.API = {
                return resolve();
             }
 
+            
+
             // First check if the token is valid
             if (!req.tokenValid) {
-               err.message = 'Access denied! Token expired!';
-               err.code = 401;
-               return reject(err);
+              err.code = 401;
+              // Check if there is any token for easier debugging
+              if (!req.token) {
+                err.message = 'Access denied! Token missing!';
+              } else { // there is a token
+                err.message = 'Access denied! Token expired!';
+              }
+              return reject(err);
             }
 
             // Check if user has app config rights configured
