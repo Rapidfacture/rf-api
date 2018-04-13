@@ -106,8 +106,8 @@ module.exports = function (res) {
     * // status 401; not autorized for route
     * ```
     */
-   self.errorAuthorizationRequired = function () {
-      send('Authorization required!', null, res, 401);
+   self.errorAuthorizationRequired = function (msg) {
+      send(`Authorization required! ${msg || ''}`, null, res, 401);
    };
 
 
