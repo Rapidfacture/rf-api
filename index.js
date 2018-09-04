@@ -197,6 +197,8 @@ module.exports.API = {
                err.message = `Access denied! Section not found in rights: ${settings.section}`;
                err.code = 403;
                return reject(err);
+            } else { // set section rights to request
+               req.sectionRights = rights[settings.section];
             }
 
             var requiredPermission = (req.originalRequest.method === 'GET' ? 'read' : 'write');
