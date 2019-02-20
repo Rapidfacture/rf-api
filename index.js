@@ -199,6 +199,13 @@ module.exports.API = {
                return reject(err);
             } else { // set section rights to request
                req.sectionRights = rights[settings.section];
+
+               if (req.sectionRights && req.sectionRights.read && req.sectionRights.read.includes('all')) {
+                  req.readAdmin = true;
+               }
+               if (req.sectionRights && req.sectionRights.write && req.sectionRights.write.includes('all')) {
+                  req.writeAdmin = true;
+               }
             }
 
             var requiredPermission = (req.originalRequest.method === 'GET' ? 'read' : 'write');
