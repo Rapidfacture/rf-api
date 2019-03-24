@@ -56,10 +56,21 @@ var fs = require('fs'),
    Request = require('./Request.js'),
    Response = require('./Response.js'),
    Services = require('./Services'),
-   config = require('rf-config');
+   config = require('rf-config'),
+   os = require('os');
 
 
-   // logging
+// get internal ip addresses for allowing internal requests
+var interfaces = os.networkInterfaces();
+var internalIpAddresses = [];
+for (var k in interfaces) {
+   for (var k2 in interfaces[k]) {
+      var address = interfaces[k][k2];
+      internalIpAddresses.push(address.address.replace('::ffff:', ''));
+   }
+}
+
+// logging
 var log = {
    info: console.log,
    success: console.log,
@@ -102,9 +113,15 @@ module.exports.API = {
       app.get('/' + functionName, function (req, res, next) {
          // Check magic token
          // This needs to be activated on a per-endpoint basis in settings
+         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+         ip = ip.replace('::ffff:', '');
+         // console.log('ip', ip);
          const internalToken = req.query.internal;
-         const internalTokenValid = settings && settings.internalToken &&
-             settings.internalToken === internalToken;
+         const internalTokenValid =
+            settings &&
+            settings.internalToken &&
+            settings.internalToken === internalToken &&
+            internalIpAddresses.indexOf(ip) > -1;
          // Log request
          log.info(
             'GET: ' + functionName +
