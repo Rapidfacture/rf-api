@@ -112,14 +112,13 @@ module.exports.API = {
       var self = this;
       app.get('/' + functionName, function (req, res, next) {
          // Check magic token
-         // This needs to be activated on a per-endpoint basis in settings
          let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
          ip = ip.replace('::ffff:', '');
          // console.log('ip', ip);
          const internalToken = req.query.internal;
          const internalTokenValid =
             settings &&
-            settings.internalToken &&
+            settings.internalToken && // this needs to be activated on a per-endpoint basis in settings
             settings.internalToken === internalToken &&
             internalIpAddresses.indexOf(ip) > -1;
          // Log request
@@ -130,6 +129,7 @@ module.exports.API = {
          res = new Response(res);
          // Skip ACL if internal token is valid
          if (internalTokenValid) {
+            req._isInternal = true;
             return func(req, res, Services.Services);
          }
          // No internal token => check ACL

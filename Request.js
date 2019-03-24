@@ -30,6 +30,9 @@ module.exports = function (req) {
    // Is the presented token valid
    self.tokenValid = req._tokenValid || false;
 
+   // internal request (interal token + localhost)?
+   self.isInternal = req._isInternal;
+
    // Set decoded if available
    self.decoded = req._decoded || null;
 
