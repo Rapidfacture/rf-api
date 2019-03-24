@@ -125,11 +125,11 @@ module.exports.API = {
          log.info(
             'GET: ' + functionName +
              (internalTokenValid ? ' (Internal token authenticated)' : ''));
+         req._isInternal = internalTokenValid;
          req = new Request(req);
          res = new Response(res);
          // Skip ACL if internal token is valid
          if (internalTokenValid) {
-            req._isInternal = true;
             return func(req, res, Services.Services);
          }
          // No internal token => check ACL
