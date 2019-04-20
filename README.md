@@ -40,7 +40,7 @@ db.global.mongooseConnection.once('open', function () {
       sessionSecret: dbSettings.sessionSecret.value
    });
 
-```js
+
  // start requests
  API.startApiFiles(config.paths.apis, function (startApi) {
     startApi(db, API, services);
@@ -48,7 +48,6 @@ db.global.mongooseConnection.once('open', function () {
 });
 ```
 
-```
 
 ## Usage
 
