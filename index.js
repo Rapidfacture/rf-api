@@ -280,6 +280,19 @@ module.exports.start = function (options, next) {
    if (!options.app) log.critical('"app" is undefined. An expres app instance is needed!');
 
    app = options.app;
+
+
+   // endpoint to check server availability
+   app.post('/server-health-check', function (req, res) {
+      let isValidRequest = !!(req.body.data && req.body.data === 'requesting health check');
+      if (isValidRequest) {
+         res.send('health check ok');
+      } else {
+         console.log(req.body.data);
+         res.status(500).send('Error: req.body.data seems incorrect');
+      }
+   });
+
    if (next) next();
    return module.exports.API;
 };

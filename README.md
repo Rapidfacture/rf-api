@@ -189,6 +189,15 @@ function createPdf(url, callback){
 Services.register(createPdf)
 ```
 
+## health check
+there is one endpoint implemented for an external health check. Post to `/server-health-check` a JSON file:
+
+```js
+{data: 'requesting health check'}
+```
+Then you should get the response: 'health check ok'
+
+
 ## Development
 
 Install the dev tools with
