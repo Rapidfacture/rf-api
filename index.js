@@ -106,11 +106,13 @@ module.exports.API = {
    */
    acl: true,
 
+   prefix: '/api/'
+
    Services: Services,
 
    get: function (functionName, func, settings) {
       var self = this;
-      app.get('/' + functionName, function (req, res, next) {
+      app.get(this.prefix + functionName, function (req, res, next) {
          // Check magic token
          let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
          ip = ip.replace('::ffff:', '');
@@ -149,7 +151,7 @@ module.exports.API = {
 
    post: function (functionName, func, settings) {
       var self = this;
-      app.post('/' + functionName, function (req, res, next) {
+      app.post(this.prefix + functionName, function (req, res, next) {
          log.info('POST: ' + functionName);
          req = new Request(req);
          res = new Response(res);
