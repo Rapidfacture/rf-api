@@ -106,7 +106,7 @@ module.exports.API = {
    */
    acl: true,
 
-   prefix: '/api/'
+   prefix: '/api/',
 
    Services: Services,
 
