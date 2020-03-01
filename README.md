@@ -63,7 +63,15 @@ API.get('funcName', function(req, res) {
 // for stuff with write access
 API.post('funcName', function(req, res) {
     // code to process the request here
-});
+}, {logDisabled: true});
+```
+
+## options
+pass further options:
+* logDisabled
+
+```js
+API.post('funcName', yourFunction, options);
 ```
 
 ## req

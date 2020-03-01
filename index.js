@@ -124,9 +124,12 @@ module.exports.API = {
             settings.internalToken === internalToken &&
             internalIpAddresses.indexOf(ip) > -1;
          // Log request
-         log.info(
-            'GET: ' + functionName +
-             (internalTokenValid ? ' (Internal token authenticated)' : ''));
+         if (!settings.logDisabled) {
+            log.info(
+               'GET: ' + functionName +
+                (internalTokenValid ? ' (Internal token authenticated)' : '')
+            );
+         }
          req._isInternal = internalTokenValid;
          req = new Request(req);
          res = new Response(res);
@@ -152,7 +155,9 @@ module.exports.API = {
    post: function (functionName, func, settings) {
       var self = this;
       app.post(this.prefix + functionName, function (req, res, next) {
-         log.info('POST: ' + functionName);
+         if (!settings.logDisabled) {
+            log.info('POST: ' + functionName);
+         }
          req = new Request(req);
          res = new Response(res);
          self.checkAcl(settings, req).then(function () {
