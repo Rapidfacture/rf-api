@@ -40,7 +40,7 @@ db.global.mongooseConnection.once('open', function () {
       sessionSecret: dbSettings.sessionSecret.value
    });
 
-
+```js
  // start requests
  API.startApiFiles(config.paths.apis, function (startApi) {
     startApi(db, API, services);
@@ -48,6 +48,7 @@ db.global.mongooseConnection.once('open', function () {
 });
 ```
 
+```
 
 ## Usage
 
@@ -63,15 +64,7 @@ API.get('funcName', function(req, res) {
 // for stuff with write access
 API.post('funcName', function(req, res) {
     // code to process the request here
-}, {logDisabled: true});
-```
-
-## options
-pass further options:
-* logDisabled
-
-```js
-API.post('funcName', yourFunction, options);
+});
 ```
 
 ## req
@@ -196,15 +189,6 @@ function createPdf(url, callback){
 }
 Services.register(createPdf)
 ```
-
-## health check
-there is one endpoint implemented for an external health check. Post to `/server-health-check` a JSON file:
-
-```js
-{data: 'requesting health check'}
-```
-Then you should get the response: 'health check ok'
-
 
 ## Development
 
