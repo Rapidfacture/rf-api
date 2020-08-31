@@ -21,16 +21,16 @@
  * ```js
  *
  * // prepare backend
- * var config = require('rf-config').init(__dirname); // config
- * var mongooseMulti = require('mongoose-multi'); // databases
- * var db = mongooseMulti.start(config.db.urls, config.paths.schemas);
- * var http = require('rf-http').start({ // webserver
+ * let config = require('rf-config').init(__dirname); // config
+ * let mongooseMulti = require('mongoose-multi'); // databases
+ * let db = mongooseMulti.start(config.db.urls, config.paths.schemas);
+ * let http = require('rf-http').start({ // webserver
  *    pathsWebserver: config.paths.webserver,
  *    port: config.port
  * });
  *
  * // prepare api
- * var API = require('rf-api').start({app: http.app}); // needs express app
+ * let API = require('rf-api').start({app: http.app}); // needs express app
  *
  * db.global.mongooseConnection.once('open', function () {
  *    // optional: start access control; has to be done before starting the websocket
@@ -43,7 +43,7 @@
  *
  *    // start requests
  *    API.startApiFiles(config.paths.apis, function (startApi) {
- *       startApi(db, API, services);
+ *       startApi(db, API);
  *    });
  * });
  *
@@ -51,27 +51,26 @@
  *
  */
 
-var fs = require('fs'),
-   app = null,
-   Request = require('./Request.js'),
-   Response = require('./Response.js'),
-   Services = require('./Services'),
-   config = require('rf-config'),
-   os = require('os');
+let fs = require('fs');
+let app = null;
+let Request = require('./Request.js');
+let Response = require('./Response.js');
+let config = require('rf-config');
+let os = require('os');
 
 
 // get internal ip addresses for allowing internal requests
-var interfaces = os.networkInterfaces();
-var internalIpAddresses = [];
-for (var k in interfaces) {
-   for (var k2 in interfaces[k]) {
-      var address = interfaces[k][k2];
+let interfaces = os.networkInterfaces();
+let internalIpAddresses = [];
+for (let k in interfaces) {
+   for (let k2 in interfaces[k]) {
+      let address = interfaces[k][k2];
       internalIpAddresses.push(address.address.replace('::ffff:', ''));
    }
 }
 
 // logging
-var log = {
+let log = {
    info: console.log,
    success: console.log,
    error: console.error,
@@ -108,10 +107,8 @@ module.exports.API = {
 
    prefix: '/api/',
 
-   Services: Services,
-
    get: function (functionName, func, settings) {
-      var self = this;
+      let self = this;
       app.get(this.prefix + functionName, function (req, res, next) {
          // Check magic token
          let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -135,11 +132,11 @@ module.exports.API = {
          res = new Response(res);
          // Skip ACL if internal token is valid
          if (internalTokenValid) {
-            return func(req, res, Services.Services);
+            return func(req, res);
          }
          // No internal token => check ACL
          self.checkAcl(settings, req).then(function () {
-            func(req, res, Services.Services);
+            func(req, res);
          }).catch(function (e) {
             if (e.code === 401) {
                res.errorAuthorizationRequired(
@@ -153,7 +150,7 @@ module.exports.API = {
    },
 
    post: function (functionName, func, settings) {
-      var self = this;
+      let self = this;
       app.post(this.prefix + functionName, function (req, res, next) {
          if (!settings.logDisabled) {
             log.info('POST: ' + functionName);
@@ -161,7 +158,7 @@ module.exports.API = {
          req = new Request(req);
          res = new Response(res);
          self.checkAcl(settings, req).then(function () {
-            func(req, res, Services.Services);
+            func(req, res);
          }).catch(function (e) {
             if (e.code === 401) {
                res.errorAuthorizationRequired(
@@ -175,9 +172,9 @@ module.exports.API = {
    },
 
    checkAcl: (settings, req) => {
-      var self = this;
+      let self = this;
       return new Promise((resolve, reject) => {
-         var err = new Error();
+         let err = new Error();
 
          if (!settings || !settings.section) {
             // This is the protection that no one misses to add the protection explicit
@@ -211,7 +208,7 @@ module.exports.API = {
                return reject(err);
             }
 
-            var rights = req.rights[config.app.name];
+            let rights = req.rights[config.app.name];
 
             if (!settings.section) {
                err.message = `Access denied! No section defined for route - protected by default`;
@@ -232,7 +229,7 @@ module.exports.API = {
                }
             }
 
-            var requiredPermission = (req.originalRequest.method === 'GET' ? 'read' : 'write');
+            let requiredPermission = (req.originalRequest.method === 'GET' ? 'read' : 'write');
             if (!rights[settings.section].hasOwnProperty(requiredPermission) ||
                rights[settings.section][requiredPermission] === false ||
                rights[settings.section][requiredPermission].length <= 0) {
@@ -253,9 +250,9 @@ module.exports.API = {
    //
    startApiFiles: function (apiPath, callback) {
       try {
-         var paths = getDirectoryPaths(apiPath);
+         let paths = getDirectoryPaths(apiPath);
          paths.forEach(function (path) {
-            var apiStartFunction = require(path).start;
+            let apiStartFunction = require(path).start;
             callback(apiStartFunction);
          });
       } catch (err) {
@@ -263,10 +260,10 @@ module.exports.API = {
       }
 
       function getDirectoryPaths (path) {
-         var pathList = [];
+         let pathList = [];
          fs.readdirSync(path).forEach(function (file) {
-            var filePath = path + '/' + file;
-            var stat = fs.statSync(filePath);
+            let filePath = path + '/' + file;
+            let stat = fs.statSync(filePath);
 
             if (stat && stat.isDirectory()) {
                pathList = pathList.concat(getDirectoryPaths(filePath));
