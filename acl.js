@@ -51,7 +51,7 @@ module.exports = {
       });
    },
 
-   getSession: function (token, res = null) {
+   getSession: function (token, db) {
       return new Promise((resolve, reject) => {
          async.waterfall([
             loadFromCache,
@@ -97,13 +97,13 @@ module.exports = {
       });
    },
 
-   checkToken: function (token, acl) {
+   checkToken: function (token, acl, sessionSecret, db) {
       // TODO proper implementation
-      return verifyToken(token, sessionSecret).then(decodedToken => {
+      return module.exports.verifyToken(token, sessionSecret).then(decodedToken => {
          // TODO actually verify something. Currently this will accept in any case
          // NOTE: any exception will reject
          // if(acl.section == ...) {...} else {throw new Exception("Not authorized");}
-         return getSession(token).then(session => {
+         return module.exports.getSession(token, db).then(session => {
             return {
                session: session,
                token: token,
@@ -123,7 +123,7 @@ module.exports = {
       });
    },
 
-   getBasicConfig: function (token, mainCallback) {
+   getBasicConfig: function (token, db, sessionSecret, options, mainCallback) {
       var loginUrls = config.global.apps['rf-app-erp'].urls;
       var basicInfo = {
          app: config.app,
@@ -132,13 +132,14 @@ module.exports = {
          termsAndPolicyLink: loginUrls.termsAndPolicyLink
       };
 
+      options = options || {};
       if (options.hasLogin) basicInfo.hasLogin = true;
       // console.log('req.body', req.body);
 
       if (token) {
          async.waterfall([
             function (callback) {
-               verifyToken(token, sessionSecret).then(decoded => {
+               module.exports.verifyToken(token, sessionSecret).then(decoded => {
                   callback(null);
                }).catch(err => {
                   // verify error => important; refresh needed
@@ -147,7 +148,7 @@ module.exports = {
                });
             },
             function (callback) {
-               getSession(token)
+               module.exports.getSession(token, db)
                   .then(function (session) {
                      session = session.toObject();
 
