@@ -51,13 +51,20 @@
  *
  */
 
-let fs = require('fs');
+// vars
 let app = null;
-let Request = require('./Request.js');
-let Response = require('./Response.js');
-let config = require('rf-config');
-let os = require('os');
 
+// libs
+let Request = require('./request.js');
+let Response = require('./response.js');
+let WebsocketServer = require('./ws.js').WebsocketServer;
+let Acl = require('./acl.js');
+
+// node modules
+const fs = require('fs');
+const config = require('rf-config');
+const os = require('os');
+const async = require('async');
 
 // get internal ip addresses for allowing internal requests
 let interfaces = os.networkInterfaces();
@@ -83,7 +90,7 @@ try { // try using rf-log
 } catch (e) {}
 
 
-module.exports.API = {
+let API = {
    /**
    *
    * ## Usage
@@ -275,15 +282,14 @@ module.exports.API = {
       }
    }
 
-
-
 };
 
-module.exports.start = function (options, next) {
+let start = function (options, next) {
 
    if (!options.app) log.critical('"app" is undefined. An expres app instance is needed!');
 
    app = options.app;
+   const http = options.http;
 
 
    // endpoint to check server availability
@@ -297,6 +303,99 @@ module.exports.start = function (options, next) {
       }
    });
 
+   if (options.acl) {
+      if (!options.sessionSecret) log.critical('"options.sessionSecret" is undefined');
+      if (!options.db) log.critical('"options.db" is undefined');
+
+      app.use(function (req, res, next) {
+
+         // do not protect endpoint /basic-config
+         if (req.originalUrl === '/basic-config') return next();
+
+         // check for token
+         var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+         if (token) {
+            req._token = token;
+            async.waterfall([
+               function (callback) {
+                  Acl.verifyToken(token, options.sessionSecret).then(decoded => {
+                     req._decoded = decoded;
+                     req._tokenValid = true;
+                     callback(null);
+                  }).catch(err => {
+                     log.error(`Bad token: ${err}`);
+                     req._decoded = null;
+                     req._tokenValid = false;
+                     callback(null);
+                  });
+               },
+               function (callback) {
+                  Acl.getSession(token, res)
+                     .then(function (session) {
+                        req._session = session;
+                        callback(null);
+                     })
+                     .catch(function (err) {
+                        req._session = null;
+                        callback(err);
+                     });
+               }
+            ], function (err, session) {
+               if (err) log.error(err);
+               next();
+            });
+         // no token
+         } else {
+            next();
+         }
+      });
+
+
+
+      /** /basic-config
+      *
+      * provide the frontend config
+      *
+      * # info without token:
+      * login url
+      * app information
+      *
+      * # info with token
+      * data from session
+      */
+      app.post('/basic-config', function (req, res) {
+         // console.log('/basic-config');
+         var token = (req.body && req.body.token) ? req.body.token : null;
+         Acl.getBasicConfig(token, function (err, basicConfig) {
+            if (err) {
+               basicConfig.err = err;
+               res.status(400).send(basicConfig).end();
+            } else {
+               res.status(200).send(basicConfig).end();
+            }
+
+         });
+      });
+
+      log.success('ACL started');
+   }
+
+
+   // start webserver if enabled
+   if (options.websocket) {
+      if (!API.checkACL) log.critical('"API.checkACL" is undefined');
+      const instance = new WebsocketServer(http.server, API.checkACL);
+      API.onWSMessage = function (...args) { instance.addHandler(...args); };
+      API.onWSMessagePromise = function (...args) { instance.addPromiseHandler(...args); };
+   }
+
+
    if (next) next();
-   return module.exports.API;
+   return API;
+};
+
+module.exports = {
+   API,
+   start
 };
