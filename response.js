@@ -5,12 +5,9 @@
  */
 
 
-var log = require('rf-log');
-
-
 module.exports = function (res) {
    // makes 'this' usable within child functions
-   var self = this;
+   let self = this;
 
    self.originalResponse = res;
 
@@ -76,78 +73,14 @@ module.exports = function (res) {
       }
    };
 
+   // integrate errors
+   let errors = require('errors').getErrors(function (err, status) {
+      send(err, null, res, status);
+   });
+   for (var errorName in errors) {
+      self[errorName] = errors[errorName];
+   }
 
-   /** ### res.errors
-     * Send back error with specific error code
-     *  ```js
-     * res.error("statusRed")
-     * // status 500; standard error; if error isn't handeled
-     * ```
-     */
-   self.error = function (err) {
-      err = handleError(err);
-      send('Server Error: ' + err, null, res, 500);
-      log.error('Server Error: ' + err);
-   };
-
-
-   /** ```js
-     * res.errorBadRequest("Missing id")
-     * // status 400; missing or wrong parameters
-     * ```
-     */
-   self.errorBadRequest = function (err) {
-      send('Bad request: ' + err, null, res, 400);
-   };
-
-
-   /** ```js
-    * res.errorAuthorizationRequired()
-    * // status 401; not autorized for route
-    * ```
-    */
-   self.errorAuthorizationRequired = function (msg) {
-      send(`Authorization required! ${msg || ''}`, null, res, 401);
-   };
-
-
-   /** ```js
-    * res.errorAccessDenied("You need be admin")
-    * // status 403; request not allowed for user
-    * ```
-    */
-   self.errorAccessDenied = function (err) {
-      send('Access denied: ' + err, null, res, 403);
-   };
-
-
-   /** ```js
-    * res.errorNotFound("No user found")
-    * // status 404; not found or not available
-    * ```
-    */
-   self.errorNotFound = function (err) {
-      send('Not found: ' + err, null, res, 404);
-   };
-
-
-   /** ```js
-    * res.errorAlreadyExists("User exists")
-    * // status 409
-    * ```
-    */
-   self.errorAlreadyExists = function (err) {
-      send('Already Exists: ' + err, null, res, 409);
-   };
-
-   /** ```js
-    * res.errorNoLongerExists("User is gone")
-    * // status 410; tried to save an entry wich was removed?
-    * ```
-    */
-   self.errorNoLongerExists = function (err) {
-      send(err, null, res, 410);
-   };
 };
 
 
