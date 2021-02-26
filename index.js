@@ -89,8 +89,7 @@ function internalTokenCheck (settings, req) {
    ip = ip.replace('::ffff:', '');
 
    const internalToken = req.query.internal;
-   return internalTokenValid =
-      settings &&
+   return settings &&
       settings.internalToken && // this needs to be activated on a per-endpoint basis in settings
       settings.internalToken === internalToken &&
       internalIpAddresses.indexOf(ip) > -1;
@@ -158,7 +157,7 @@ module.exports.API = {
    post: function (functionName, func, settings) {
       var self = this;
       app.post(this.prefix + functionName, function (req, res, next) {
-         const internatTokenValid = internalTokenCheck(settings, req);
+         const internalTokenValid = internalTokenCheck(settings, req);
          // Log request
          if (!settings.logDisabled) {
             log.info(
