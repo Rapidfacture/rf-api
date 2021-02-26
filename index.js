@@ -83,6 +83,18 @@ try { // try using rf-log
    log = require(require.resolve('rf-log')).customPrefixLogger('[rf-api]');
 } catch (e) {}
 
+function internalTokenCheck (settings, req) {
+   // Check magic token
+   let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+   ip = ip.replace('::ffff:', '');
+
+   const internalToken = req.query.internal;
+   return internalTokenValid =
+      settings &&
+      settings.internalToken && // this needs to be activated on a per-endpoint basis in settings
+      settings.internalToken === internalToken &&
+      internalIpAddresses.indexOf(ip) > -1;
+}
 
 module.exports.API = {
    /**
@@ -113,16 +125,7 @@ module.exports.API = {
    get: function (functionName, func, settings) {
       var self = this;
       app.get(this.prefix + functionName, function (req, res, next) {
-         // Check magic token
-         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-         ip = ip.replace('::ffff:', '');
-         // console.log('ip', ip);
-         const internalToken = req.query.internal;
-         const internalTokenValid =
-            settings &&
-            settings.internalToken && // this needs to be activated on a per-endpoint basis in settings
-            settings.internalToken === internalToken &&
-            internalIpAddresses.indexOf(ip) > -1;
+         const internalTokenValid = internalTokenCheck(settings, req);
          // Log request
          if (!settings.logDisabled) {
             log.info(
@@ -155,11 +158,22 @@ module.exports.API = {
    post: function (functionName, func, settings) {
       var self = this;
       app.post(this.prefix + functionName, function (req, res, next) {
+         const internatTokenValid = internalTokenCheck(settings, req);
+         // Log request
          if (!settings.logDisabled) {
-            log.info('POST: ' + functionName);
+            log.info(
+               'POST: ' + functionName +
+                (internalTokenValid ? ' (Internal token authenticated)' : '')
+            );
          }
+         req._isInternal = internalTokenValid;
          req = new Request(req);
          res = new Response(res);
+
+         if (internalTokenValid) {
+            return func(req, res, Services.Services);
+         }
+         // No internal token => check ACL
          self.checkAcl(settings, req).then(function () {
             func(req, res, Services.Services);
          }).catch(function (e) {
