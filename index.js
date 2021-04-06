@@ -118,7 +118,7 @@ function getOptions (method) {
 
 function api (functionName, func, settings, method, self) {
    var options = getOptions(method);
-   var endPoint = self.prefix + options.methodPrefix + functionName
+   var endPoint = self.prefix + options.methodPrefix + functionName;
 
    app[options.functionName](endPoint, function (req, res) {
       const internalTokenValid = internalTokenCheck(settings, req);
