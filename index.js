@@ -95,6 +95,63 @@ function internalTokenCheck (settings, req) {
       internalIpAddresses.indexOf(ip) > -1;
 }
 
+
+function getOptions (method) {
+   return {
+      get: {
+         methodPrefix: 'get-',
+         log: 'GET',
+         functionName: 'post'
+      },
+      realGet: {
+         methodPrefix: '',
+         log: 'GET',
+         functionName: 'get'
+      },
+      post: {
+         methodPrefix: 'post-',
+         log: 'POST',
+         functionName: 'post'
+      }
+   }[method];
+}
+
+function api (functionName, func, settings, method, self) {
+   var options = getOptions(method);
+   var endPoint = self.prefix + options.methodPrefix + functionName
+
+   app[options.functionName](endPoint, function (req, res) {
+      const internalTokenValid = internalTokenCheck(settings, req);
+      // Log request
+      if (!settings.logDisabled) {
+         log.info(
+            options.log + ': ' + functionName +
+             (internalTokenValid ? ' (Internal token authenticated)' : '')
+         );
+      }
+      req._isInternal = internalTokenValid;
+      req = new Request(req);
+      res = new Response(res);
+
+      // Skip ACL if internal token is valid
+      if (internalTokenValid) {
+         return func(req, res, Services.Services);
+      }
+      // No internal token => check ACL
+      self.checkAcl(settings, req).then(function () {
+         func(req, res, Services.Services);
+      }).catch(function (e) {
+         if (e.code === 401) {
+            res.errorAuthorizationRequired(
+               `${functionName} token invalid! ${e.message}`);
+         } else {
+            res.errorAccessDenied(
+               `${functionName} not allowed! ${e.message}`);
+         }
+      });
+   });
+}
+
 module.exports.API = {
    /**
    *
@@ -122,69 +179,16 @@ module.exports.API = {
    Services: Services,
 
    get: function (functionName, func, settings) {
-      var self = this;
-      app.get(this.prefix + functionName, function (req, res, next) {
-         const internalTokenValid = internalTokenCheck(settings, req);
-         // Log request
-         if (!settings.logDisabled) {
-            log.info(
-               'GET: ' + functionName +
-                (internalTokenValid ? ' (Internal token authenticated)' : '')
-            );
-         }
-         req._isInternal = internalTokenValid;
-         req = new Request(req);
-         res = new Response(res);
-         // Skip ACL if internal token is valid
-         if (internalTokenValid) {
-            return func(req, res, Services.Services);
-         }
-         // No internal token => check ACL
-         self.checkAcl(settings, req).then(function () {
-            func(req, res, Services.Services);
-         }).catch(function (e) {
-            if (e.code === 401) {
-               res.errorAuthorizationRequired(
-                  `${functionName} not allowed ! ${e.message}`);
-            } else {
-               res.errorAccessDenied(
-                  `${functionName} not allowed! ${e.message}`);
-            }
-         });
-      });
+      if (settings.realGet) {
+         api(functionName, func, settings, 'realGet', this);
+
+      } else {
+         api(functionName, func, settings, 'get', this);
+      }
    },
 
    post: function (functionName, func, settings) {
-      var self = this;
-      app.post(this.prefix + functionName, function (req, res, next) {
-         const internalTokenValid = internalTokenCheck(settings, req);
-         // Log request
-         if (!settings.logDisabled) {
-            log.info(
-               'POST: ' + functionName +
-                (internalTokenValid ? ' (Internal token authenticated)' : '')
-            );
-         }
-         req._isInternal = internalTokenValid;
-         req = new Request(req);
-         res = new Response(res);
-
-         if (internalTokenValid) {
-            return func(req, res, Services.Services);
-         }
-         // No internal token => check ACL
-         self.checkAcl(settings, req).then(function () {
-            func(req, res, Services.Services);
-         }).catch(function (e) {
-            if (e.code === 401) {
-               res.errorAuthorizationRequired(
-                  `${functionName} token invalid! ${e.message}`);
-            } else {
-               res.errorAccessDenied(
-                  `${functionName} not allowed! ${e.message}`);
-            }
-         });
-      });
+      api(functionName, func, settings, 'post', this);
    },
 
    checkAcl: (settings, req) => {
@@ -259,11 +263,6 @@ module.exports.API = {
       });
    },
 
-   //
-   //  API.startApiFiles(config.paths.apis, function(startApi){
-   //    startApi(db, API);
-   //  })
-   //
    startApiFiles: function (apiPath, callback) {
       try {
          var paths = getDirectoryPaths(apiPath);
@@ -290,9 +289,6 @@ module.exports.API = {
          return pathList;
       }
    }
-
-
-
 };
 
 module.exports.start = function (options, next) {
