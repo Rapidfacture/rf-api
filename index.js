@@ -101,26 +101,46 @@ function getOptions (method) {
       get: {
          methodPrefix: 'get-',
          log: 'GET',
-         functionName: 'post'
+         httpMethod: 'post'
       },
       realGet: {
          methodPrefix: '',
          log: 'GET',
-         functionName: 'get'
+         httpMethod: 'get'
       },
       post: {
          methodPrefix: 'post-',
          log: 'POST',
-         functionName: 'post'
+         httpMethod: 'post'
       }
    }[method];
 }
 
+/**
+ * @desc
+ * Calls API functions defined in server api files
+ *
+ * @example
+ * // Integration in module.exports.API
+ * api(functionName, func, settings, 'post', this);
+ *
+ *
+ * @param functionName Function name defined in API, e.g. 'order-update'
+ *
+ * @param func Function to be executed, defined in API
+ *
+ * @param settings Options how to handle endpoint, defined in API
+ *
+ * @param method String containing 'realGet' / 'get' / 'post' to get settings from getOptions function
+ *
+ * @param self Object module.exports.API, always called with 'this'
+ *
+ */
 function api (functionName, func, settings, method, self) {
    var options = getOptions(method);
    var endPoint = self.prefix + options.methodPrefix + functionName;
 
-   app[options.functionName](endPoint, function (req, res) {
+   app[options.httpMethod](endPoint, function (req, res) {
       const internalTokenValid = internalTokenCheck(settings, req);
       // Log request
       if (!settings.logDisabled) {
