@@ -1,6 +1,6 @@
 {
   "name": "rf-api",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "API helper functions.",
   "license": "MIT",
   "repository": {
@@ -23,14 +23,6 @@
     "name": "Felix Furtmayr"
   },
   "maintainers": [
-    {
-      "name": "alex-kohl",
-      "email": "alexander-kohl@gmx.net"
-    },
-    {
-      "name": "joshsimon",
-      "email": "joshsimon@gmx.de"
-    },
     {
       "name": "felix_furtmayr",
       "email": "ff@rapidfacture.com"
