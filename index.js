@@ -146,7 +146,7 @@ function api (functionName, func, settings, method, self) {
       if (!settings.logDisabled) {
          log.info(
             options.log + ': ' + functionName +
-             (internalTokenValid ? ' (Internal token authenticated)' : '')
+            (internalTokenValid ? ' (Internal token authenticated)' : '')
          );
       }
       req._isInternal = internalTokenValid;
@@ -174,24 +174,24 @@ function api (functionName, func, settings, method, self) {
 
 module.exports.API = {
    /**
-   *
-   * ## Usage
-   *
-   * Note:
-   * * there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj should include everything
-   * * name your request properly
-   *
-   * ```js
-   * // for read only stuff
-   * API.get('funcName', function(req, res) {
-   *     // code to process the request here
-   * });
-   * // for stuff with write access
-   * API.post('funcName', function(req, res) {
-   *     // code to process the request here
-   * });
-   * ```
-   */
+    *
+    * ## Usage
+    *
+    * Note:
+    * * there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj should include everything
+    * * name your request properly
+    *
+    * ```js
+    * // for read only stuff
+    * API.get('funcName', function(req, res) {
+    *     // code to process the request here
+    * });
+    * // for stuff with write access
+    * API.post('funcName', function(req, res) {
+    *     // code to process the request here
+    * });
+    * ```
+    */
    acl: true,
 
    prefix: '/api/',
@@ -209,78 +209,6 @@ module.exports.API = {
 
    post: function (functionName, func, settings) {
       api(functionName, func, settings, 'post', this);
-   },
-
-   checkAcl: (settings, req) => {
-      var self = this;
-      return new Promise((resolve, reject) => {
-         var err = new Error();
-
-         if (!settings || !settings.section) {
-            // This is the protection that no one misses to add the protection explicit
-            err.message = 'No settings defined! Protected by default';
-            err.code = 403;
-            return reject(err);
-         } else {
-            // If the settings.permission set but empty the route isn't protected
-            if (settings.permission === false || !self.API.acl) {
-               return resolve();
-            }
-
-
-
-            // First check if the token is valid
-            if (!req.tokenValid) {
-               err.code = 401;
-               // Check if there is any token for easier debugging
-               if (!req.token) {
-                  err.message = 'Access denied! Token missing!';
-               } else { // there is a token
-                  err.message = 'Access denied! Token expired!';
-               }
-               return reject(err);
-            }
-
-            // Check if user has app config rights configured
-            if (!req.rights.hasOwnProperty(config.app.name)) {
-               err.message = 'Access denied!';
-               err.code = 403;
-               return reject(err);
-            }
-
-            var rights = req.rights[config.app.name];
-
-            if (!settings.section) {
-               err.message = `Access denied! No section defined for route - protected by default`;
-               err.code = 403;
-               return reject(err);
-            } else if (!rights.hasOwnProperty(settings.section)) {
-               err.message = `Access denied! Section not found in rights: ${settings.section}`;
-               err.code = 403;
-               return reject(err);
-            } else { // set section rights to request
-               req.sectionRights = rights[settings.section];
-
-               if (req.sectionRights && req.sectionRights.read && req.sectionRights.read.includes('all')) {
-                  req.readAdmin = true;
-               }
-               if (req.sectionRights && req.sectionRights.write && req.sectionRights.write.includes('all')) {
-                  req.writeAdmin = true;
-               }
-            }
-
-            var requiredPermission = (req.originalRequest.method === 'GET' ? 'read' : 'write');
-            if (!rights[settings.section].hasOwnProperty(requiredPermission) ||
-               rights[settings.section][requiredPermission] === false ||
-               rights[settings.section][requiredPermission].length <= 0) {
-               err.message = 'Access denied! Insufficient permissions!';
-               err.code = 403;
-               return reject(err);
-            }
-
-            resolve();
-         }
-      });
    },
 
    startApiFiles: function (apiPath, callback) {
@@ -308,8 +236,123 @@ module.exports.API = {
          });
          return pathList;
       }
+   },
+
+   checkAcl: (settings, req) => {
+      var self = this;
+      return new Promise((resolve, reject) => {
+         var err = new Error();
+
+         if (!settings || !settings.section) {
+            // This is the protection that no one misses to add the protection explicit
+            err.message = 'No settings defined! Protected by default';
+            err.code = 403;
+            return reject(err);
+         } else {
+            // If the settings.permission set but empty the route isn't protected
+            if (settings.permission === false || !self.API.acl) {
+               return resolve();
+            }
+
+
+            // is token valid?
+            if (!req.tokenValid) {
+               err.code = 401;
+               // Check if there is any token for easier debugging
+               if (!req.token) {
+                  err.message = 'Token missing! Access denied!';
+               } else { // there is a token
+                  err.message = 'Token expired! Access denied!';
+               }
+               return reject(err);
+            }
+
+            // has user the rights for app?
+            if (!req.rights.hasOwnProperty(config.app.name)) {
+               err.message = 'No access to this app!';
+               err.code = 403;
+               return reject(err);
+            }
+
+            let rights = req.rights[config.app.name];
+
+            // no section?
+            if (!settings.section) {
+               err.message = `No section defined for route - protected by default. Access denied!`;
+               err.code = 403;
+               return reject(err);
+            }
+
+            // get section with highest permission
+            let right = getHighestRight(settings.section, rights);
+
+            var requiredPermission = (req.originalRequest.method === 'GET' ? 'read' : 'write');
+            if (!right.hasOwnProperty(requiredPermission) ||
+               right[requiredPermission] === false ||
+               right[requiredPermission].length <= 0) {
+               err.message = 'Insufficient permissions! Access denied!';
+               err.code = 403;
+               return reject(err);
+            }
+
+            // set admin rights to request for easier checking in the endpoint code
+            if (right && right.read && right.read.includes('all')) req.readAdmin = true;
+            if (right && right.write && right.write.includes('all')) req.writeAdmin = true;
+            req.sectionRights = right;
+
+            resolve();
+         }
+      });
    }
 };
+
+function getHighestRight (section, rights) {
+   if (Array.isArray(section)) {
+
+      // we extract the highest read write and the highest write right
+      // this may not always be correct (higher read write for one section than for another)
+      // still we consider this a simple working solution
+      // to avoid problems, endpoints groups have to be split enough
+      let highestPerm = {};
+      section.forEach(function (secName) {
+         if (rights.hasOwnProperty(section)) {
+            let right = rights[section];
+            var readPermissionVal = getHighetsRightValue(right.read);
+            var writePermissionVal = getHighetsRightValue(right.write);
+            if (highestPerm.readPermissionVal && highestPerm.readPermissionVal < readPermissionVal) {
+               highestPerm.readPermissionVal = readPermissionVal;
+               highestPerm.read = section.read;
+            }
+            if (highestPerm.writePermissionVal && highestPerm.readPermissionVal < writePermissionVal) {
+               highestPerm.writePermissionVal = writePermissionVal;
+               highestPerm.write = section.write;
+            }
+         }
+      });
+
+      return highestPerm;
+   } else {
+      return rights[section];
+   }
+
+   function getHighetsRightValue (array) {
+      var permissionValues = {
+         '-': 0,
+         'own': 1,
+         'account': 2,
+         'group': 3,
+         'all': 4
+      };
+      var val = 0;
+      array = array || [];
+      array.forEach(function (key) {
+         if (permissionValues[key] && permissionValues[key] > val) val = permissionValues[key];
+      });
+      return val;
+   }
+}
+
+
 
 module.exports.start = function (options, next) {
 
