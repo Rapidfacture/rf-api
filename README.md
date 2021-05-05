@@ -48,17 +48,8 @@ db.global.mongooseConnection.once('open', function () {
 });
 ```
 
-```
 
 ## Usage
-
-Note:
-* there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj should include everything
-* http Factory and rf-api use both http POST method for communication to avoid URL issues with GET method
-* in case a GET method is technically required e.g. download a file use "realGet" in API settings
-* To avoid collision in namespace between get and post methods name the call on http layer will be completed automatically with 'post-' or 'get-'  
-* name your request properly
-
 ```js
 // for read only stuff
 API.get('funcName', function(req, res) {
@@ -74,9 +65,15 @@ API.get('funcName', function (req, res) {
 API.post('funcName', function(req, res) {
     // code to process the request here
 });
-
-
 ```
+
+## Technical notes
+* we always use "post" in the background, as we can send everything with it without size limit
+* there are no url parameters used; the correspondig `http Factory` transfers a json objects to the API methods; this obj  includes everything, we avoid issues with GET method
+* in case a GET method is technically required e.g. download a file use "realGet" in API settings
+* To avoid collision in namespace between get and post methods name the call on http layer will be completed internally with 'post-' or 'get-'  
+* name your request properly
+
 
 ## req
 convert obj structure of original express request
