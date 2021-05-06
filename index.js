@@ -243,17 +243,17 @@ module.exports.API = {
       return new Promise((resolve, reject) => {
          var err = new Error();
 
+         // route isn't protected
+         if (settings.permission === false || !self.API.acl) {
+            return resolve();
+         }
+
          if (!settings || !settings.section) {
             // This is the protection that no one misses to add the protection explicit
             err.message = 'No settings defined! Protected by default';
             err.code = 403;
             return reject(err);
          } else {
-            // If the settings.permission set but empty the route isn't protected
-            if (settings.permission === false || !self.API.acl) {
-               return resolve();
-            }
-
 
             // is token valid?
             if (!req.tokenValid) {
