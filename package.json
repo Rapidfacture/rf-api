@@ -15,7 +15,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "grunt": "1.0.1",
+    "grunt": "1.4.0",
     "grunt-eslint": "20.1.0",
     "mdextract": "1.0.0"
   },
