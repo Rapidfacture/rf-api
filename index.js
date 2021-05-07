@@ -323,21 +323,24 @@ function getHighestRight (section, rights) {
       // to avoid problems, endpoints groups have to be split enough
       let highestPerm = {};
       section.forEach(function (secName) {
-         if (rights.hasOwnProperty(section)) {
-            let right = rights[section];
+         if (rights[secName]) {
+            let right = rights[secName];
+            // console.log('right', secName, right)
             var readPermissionVal = getHighetsRightValue(right.read);
             var writePermissionVal = getHighetsRightValue(right.write);
-            if (highestPerm.readPermissionVal && highestPerm.readPermissionVal < readPermissionVal) {
+            // console.log('readPermissionVal', readPermissionVal)
+            // console.log('writePermissionVal', writePermissionVal)
+            if (!highestPerm.readPermissionVal || highestPerm.readPermissionVal < readPermissionVal) {
                highestPerm.readPermissionVal = readPermissionVal;
-               highestPerm.read = section.read;
+               highestPerm.read = right.read;
             }
-            if (highestPerm.writePermissionVal && highestPerm.readPermissionVal < writePermissionVal) {
+            if (!highestPerm.writePermissionVal || highestPerm.writePermissionVal < writePermissionVal) {
                highestPerm.writePermissionVal = writePermissionVal;
-               highestPerm.write = section.write;
+               highestPerm.write = right.write;
             }
          }
       });
-
+      // console.log('highestPerm', highestPerm)
       return highestPerm;
    } else {
       return rights[section];
