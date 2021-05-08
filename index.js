@@ -276,7 +276,7 @@ module.exports.API = {
             }
 
             // has user the rights for app?
-            if (!req.rights.hasOwnProperty(config.app.name)) {
+            if (!req.rights || !req.rights.hasOwnProperty(config.app.name)) {
                err.message = 'No access to this app!';
                err.code = 403;
                return reject(err);
@@ -343,7 +343,7 @@ function getHighestRight (section, rights) {
       // console.log('highestPerm', highestPerm)
       return highestPerm;
    } else {
-      return rights[section];
+      return rights[section] || {};
    }
 
    function getHighetsRightValue (array) {
