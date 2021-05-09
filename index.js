@@ -151,6 +151,7 @@ function api (functionName, func, settings, method, self) {
       }
       req._isInternal = internalTokenValid;
       req = new Request(req);
+      req.method = options.log; // needed for read/write check
       res = new Response(res);
 
       // Skip ACL if internal token is valid
@@ -294,7 +295,7 @@ module.exports.API = {
             // get section with highest permission
             let right = getHighestRight(settings.section, rights);
 
-            var requiredPermission = (req.originalRequest.method === 'GET' ? 'read' : 'write');
+            var requiredPermission = (req.method === 'GET' ? 'read' : 'write');
             if (!right.hasOwnProperty(requiredPermission) ||
                right[requiredPermission] === false ||
                right[requiredPermission].length <= 0) {
