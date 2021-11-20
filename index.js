@@ -233,14 +233,20 @@ module.exports.API = {
 
       function getDirectoryPaths (path) {
          var pathList = [];
-         fs.readdirSync(path).forEach(function (file) {
-            var filePath = path + '/' + file;
+         fs.readdirSync(path).forEach(function (fileName) {
+            var filePath = path + '/' + fileName;
+            var words = fileName.split('.');
+            var name = words[0];
+            var extension = words[words.length - 1];
             var stat = fs.statSync(filePath);
 
+            // step into directory
             if (stat && stat.isDirectory()) {
                pathList = pathList.concat(getDirectoryPaths(filePath));
-            } else if (file[0] !== '.') {
-               pathList.push(path + '/' + file.split('.')[0]);
+
+            // or add js file to list
+            } else if (extension === 'js') {
+               pathList.push(path + '/' + name);
             }
          });
          return pathList;
