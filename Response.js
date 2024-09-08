@@ -6,12 +6,13 @@
 
 
 var log = require('rf-log');
+var db
 
+module.exports = function (res, database) {
+   db = database;
 
-module.exports = function (res) {
    // makes 'this' usable within child functions
    var self = this;
-
    self.originalResponse = res;
 
 
@@ -85,9 +86,10 @@ module.exports = function (res) {
      * ```
      */
    self.error = function (err) {
-      err = handleError(err);
-      send('Server Error: ' + err, null, res, 500);
-      log.error('Server Error: ' + err);
+      handleError(err, function (result) {
+         send('Server Error: ' + result, null, res, 500);
+         log.error('Server Error: ' + result);
+      });
    };
 
 
@@ -158,12 +160,13 @@ function send (err, docs, res, status) {
 // handle requests
    if (err) {
       status = status || 500;
-      err = handleError(err);
+      handleError(err, function (result) {
+         res
+            .status(status)
+            .send(result)
+            .end();
+      });
 
-      res
-         .status(status)
-         .send(err)
-         .end();
    } else { // success; last step
       status = status || 200;
       res
@@ -175,15 +178,45 @@ function send (err, docs, res, status) {
 
 
 
-function handleError (err) {
-// return the required error string for the response
+function handleError (error, callback) {
+   var endPoint, stack, type;
+   if (typeof error === 'object') {
+      if (error.endPoint) endPoint = error.endPoint;
 
-   if (typeof err === 'object') {
       // MongoDB Unique Error
-      if (err.code === 11000) return err.errmsg;
-      // else
-      return JSON.stringify(err);
+      if (error.code === 11000) {
+         error = error.errmsg;
+
+      } else if (error.message) {
+         var errStack = error.stack.split('\n');
+
+         type = errStack[0];
+         stack = errStack.slice(1);
+         error = 'Error: ' + error.message;
+
+      } else {
+         error = JSON.stringify(error);
+      }
    }
 
-   return err;
+   if (!endPoint) return callback(error);
+
+   db.statistic.endPoints
+      .findOneAndUpdate(
+         { name: endPoint.name, method: endPoint.method },
+         { $push: {
+            events: {
+               stack: stack,
+               eventType: type,
+               date: new Date(),
+               data: endPoint.data
+            }
+         } },
+         { upsert: true, new: true },
+         function (err) {
+            if (err) console.log('Error while saving error in statistic', err);
+
+            callback(error);
+         }
+      );
 }

@@ -51,18 +51,18 @@
  *
  */
 
-var fs = require('fs'),
-   app = null,
-   Request = require('./Request.js'),
-   Response = require('./Response.js'),
-   Services = require('./Services'),
-   config = require('rf-config'),
-   os = require('os');
+const fs = require('fs');
+const Request = require('./Request.js');
+const Response = require('./Response.js');
+const Services = require('./Services');
+const config = require('rf-config');
+const os = require('os');
 
+var app, db;
 
 // get internal ip addresses for allowing internal requests
-var interfaces = os.networkInterfaces();
-var internalIpAddresses = [];
+const interfaces = os.networkInterfaces();
+const  internalIpAddresses = [];
 for (var k in interfaces) {
    for (var k2 in interfaces[k]) {
       var address = interfaces[k][k2];
@@ -152,24 +152,44 @@ function api (functionName, func, settings, method, self) {
       req._isInternal = internalTokenValid;
       req = new Request(req);
       req.method = options.log; // needed for read/write check
-      res = new Response(res);
+      res = new Response(res, db);
 
+      // console.log(typeof req.data, req.data);
       // Skip ACL if internal token is valid
       if (internalTokenValid) {
-         return func(req, res, Services.Services);
+         applyFn();
+
+      } else {
+         // No internal token => check ACL
+         self.checkAcl(settings, req).then(function () {
+            applyFn();
+         }).catch(function (e) {
+            if (e.code === 401) {
+               res.errorAuthorizationRequired(`${functionName} token invalid! ${e.message}`);
+
+            } else if (e.code === 403) {
+               res.errorAccessDenied(`${functionName} not allowed! ${e.message}`);
+
+            } else {
+               res.error('Error: ' + e.message);
+            }
+         });
       }
-      // No internal token => check ACL
-      self.checkAcl(settings, req).then(function () {
-         func(req, res, Services.Services);
-      }).catch(function (e) {
-         if (e.code === 401) {
-            res.errorAuthorizationRequired(
-               `${functionName} token invalid! ${e.message}`);
-         } else {
-            res.errorAccessDenied(
-               `${functionName} not allowed! ${e.message}`);
+
+      function applyFn () {
+         try {
+            func(req, res, Services.Services);
+
+         } catch (e) {
+            e.endPoint = {
+               name: functionName,
+               method: options.httpMethod,
+               data: JSON.stringify(req.data)
+            };
+
+            res.error(e);
          }
-      });
+      }
    });
 }
 
@@ -332,11 +352,10 @@ function getHighestRight (section, rights) {
       section.forEach(function (secName) {
          if (rights[secName]) {
             let right = rights[secName];
-            // console.log('right', secName, right)
+
             var readPermissionVal = getHighetsRightValue(right.read);
             var writePermissionVal = getHighetsRightValue(right.write);
-            // console.log('readPermissionVal', readPermissionVal)
-            // console.log('writePermissionVal', writePermissionVal)
+
             if (!highestPerm.readPermissionVal || highestPerm.readPermissionVal < readPermissionVal) {
                highestPerm.readPermissionVal = readPermissionVal;
                highestPerm.read = right.read;
@@ -347,8 +366,9 @@ function getHighestRight (section, rights) {
             }
          }
       });
-      // console.log('highestPerm', highestPerm)
+
       return highestPerm;
+
    } else {
       return rights[section] || {};
    }
@@ -377,7 +397,7 @@ module.exports.start = function (options, next) {
    if (!options.app) log.critical('"app" is undefined. An expres app instance is needed!');
 
    app = options.app;
-
+   db = options.db;
 
    // endpoint to check server availability
    app.post('/server-health-check', function (req, res) {
