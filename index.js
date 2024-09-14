@@ -154,27 +154,37 @@ function api (functionName, func, settings, method, self) {
       req.method = options.log; // needed for read/write check
       res = new Response(res, db);
 
-      // console.log(typeof req.data, req.data);
-      // Skip ACL if internal token is valid
-      if (internalTokenValid) {
-         applyFn();
+      db.statistic.endPoints
+         .findOneAndUpdate(
+            { name: functionName, method: options.httpMethod },
+            { $inc: { requests: 1 } },
+            { upsert: true },
+            function (err) {
+               if (err) console.log('Error while saving error in statistic');
 
-      } else {
-         // No internal token => check ACL
-         self.checkAcl(settings, req).then(function () {
-            applyFn();
-         }).catch(function (e) {
-            if (e.code === 401) {
-               res.errorAuthorizationRequired(`${functionName} token invalid! ${e.message}`);
+               // Skip ACL if internal token is valid
+               if (internalTokenValid) {
+                  applyFn();
 
-            } else if (e.code === 403) {
-               res.errorAccessDenied(`${functionName} not allowed! ${e.message}`);
+               } else {
+                  // No internal token => check ACL
+                  self.checkAcl(settings, req).then(function () {
+                     applyFn();
+                  }).catch(function (e) {
+                     if (e.code === 401) {
+                        res.errorAuthorizationRequired(`${functionName} token invalid! ${e.message}`);
 
-            } else {
-               res.error('Error: ' + e.message);
+                     } else if (e.code === 403) {
+                        res.errorAccessDenied(`${functionName} not allowed! ${e.message}`);
+
+                     } else {
+                        res.error('Error: ' + e.message);
+                     }
+                  });
+               }
             }
-         });
-      }
+         )
+
 
       function applyFn () {
          try {
