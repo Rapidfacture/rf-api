@@ -154,15 +154,15 @@ function api (functionName, func, settings, method, self) {
       req.method = options.log; // needed for read/write check
       res = new Response(res, db);
 
+      // Skip ACL if internal token is valid
       db.statistic.endPoints
          .findOneAndUpdate(
-            { name: functionName, method: options.httpMethod },
-            { $inc: { requests: 1 } },
+            { name: functionName, method: options.log },
+            { $push: { requests: new Date() } },
             { upsert: true },
             function (err) {
                if (err) console.log('Error while saving error in statistic');
 
-               // Skip ACL if internal token is valid
                if (internalTokenValid) {
                   applyFn();
 
@@ -193,7 +193,7 @@ function api (functionName, func, settings, method, self) {
          } catch (e) {
             e.endPoint = {
                name: functionName,
-               method: options.httpMethod,
+               method: options.log,
                data: JSON.stringify(req.data)
             };
 
