@@ -187,7 +187,7 @@ function handleError (error, callback) {
       if (error.code === 11000) {
          error = error.errmsg;
 
-      } else if (error.message) {
+      } else if (error.message && error.stack) {
          var errStack = error.stack.split('\n');
 
          type = errStack[0];
