@@ -58,7 +58,7 @@ const Services = require('./Services');
 const config = require('rf-config');
 const os = require('os');
 
-var app, db;
+var app, db, bypassInternalTokenCheck;
 
 // get internal ip addresses for allowing internal requests
 const interfaces = os.networkInterfaces();
@@ -84,6 +84,8 @@ try { // try using rf-log
 } catch (e) {}
 
 function internalTokenCheck (settings, req) {
+   if (bypassInternalTokenCheck && settings.internalToken) return true;
+
    // Check magic token
    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
    ip = ip.replace('::ffff:', '');
@@ -408,6 +410,7 @@ module.exports.start = function (options, next) {
 
    app = options.app;
    db = options.db;
+   bypassInternalTokenCheck = options.bypassInternalTokenCheck;
 
    // endpoint to check server availability
    app.post('/server-health-check', function (req, res) {
